@@ -12,12 +12,12 @@ mod prelude {
 }
 use prelude::*;
 
-struct State {
+struct PlayerState {
     player: Player,
     map: Map,
 }
 
-impl State {
+impl PlayerState {
     fn new() -> Self {
         let MapBuilderResult { player, map } =
             MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 1).build();
@@ -43,7 +43,7 @@ impl State {
     }
 }
 
-impl GameState for State {
+impl GameState for PlayerState {
     fn tick(&mut self, ctx: &mut bracket_lib::prelude::BTerm) {
         self.player.update(ctx);
         self.render_tick(ctx);
@@ -61,5 +61,5 @@ fn main() -> BError {
 
     context.with_post_scanlines(true);
 
-    main_loop(context, State::new())
+    main_loop(context, PlayerState::new())
 }
