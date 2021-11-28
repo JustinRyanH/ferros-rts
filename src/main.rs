@@ -1,4 +1,4 @@
-use bracket_lib::prelude::{BError, BTermBuilder, GameState};
+mod player;
 
 mod prelude {
     pub const SCREEN_WIDTH: i32 = 80;
@@ -6,39 +6,9 @@ mod prelude {
     pub const DIMENSION_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DIMENSION_HEIGHT: i32 = SCREEN_HEIGHT / 2;
     pub use bracket_lib::prelude::*;
+    pub use crate::player::*;
 }
 use prelude::*;
-
-struct Player {
-    pub position: Point,
-    pub color: ColorPair,
-}
-
-impl Player {
-    pub fn new(x: i32, y: i32) -> Self {
-        Self {
-            position: Point::new(x, y),
-            color: ColorPair::new(GREEN, BLACK),
-        }
-    }
-
-    pub fn update(&mut self, ctx: &mut BTerm) {
-        if let Some(key) = ctx.key {
-            let delta = match key {
-                VirtualKeyCode::Left => Point::new(-1, 0),
-                VirtualKeyCode::Right => Point::new(1, 0),
-                VirtualKeyCode::Up => Point::new(0, -1),
-                VirtualKeyCode::Down => Point::new(0, 1),
-                _ => Point::new(0, 0)
-            };
-            self.position += delta;
-        }
-    }
-
-    pub fn render(&self, draw: &mut DrawBatch) {
-        draw.set(self.position, self.color, to_cp437('@'));
-    }
-}
 
 struct State {
     player: Player,
