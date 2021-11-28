@@ -1,5 +1,6 @@
 mod map;
 mod player;
+mod player_state;
 
 mod prelude {
     pub const SCREEN_WIDTH: i32 = 80;
@@ -8,47 +9,10 @@ mod prelude {
     pub const DIMENSION_HEIGHT: i32 = SCREEN_HEIGHT / 2;
     pub use crate::map::*;
     pub use crate::player::*;
+    pub use crate::player_state::*;
     pub use bracket_lib::prelude::*;
 }
 use prelude::*;
-
-struct PlayerState {
-    player: Player,
-    map: Map,
-}
-
-impl PlayerState {
-    fn new() -> Self {
-        let MapBuilderResult { player, map } =
-            MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 1).build();
-        Self { player, map }
-    }
-
-    fn render_tick(&mut self, ctx: &mut BTerm) {
-        let mut draw = DrawBatch::new();
-        Self::clear_targets(&mut draw);
-
-        self.player.render(&mut draw);
-        self.map.render(&mut draw);
-
-        draw.submit(0).expect("Batch Error");
-        render_draw_buffer(ctx).expect("Render Error");
-    }
-
-    fn clear_targets(draw: &mut DrawBatch) {
-        draw.target(0);
-        draw.cls();
-        draw.target(1);
-        draw.cls();
-    }
-}
-
-impl GameState for PlayerState {
-    fn tick(&mut self, ctx: &mut bracket_lib::prelude::BTerm) {
-        self.player.update(ctx);
-        self.render_tick(ctx);
-    }
-}
 
 fn main() -> BError {
     let mut context = BTermBuilder::simple80x50()
