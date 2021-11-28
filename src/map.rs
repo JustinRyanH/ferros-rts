@@ -1,4 +1,33 @@
+use core::num;
+
 use crate::prelude::*;
+
+pub struct MapBuilder {
+    map: Map,
+    rooms: Vec<Rect>,
+    player: Player,
+}
+
+impl MapBuilder {
+    pub fn new(width: i32, height: i32, number_of_rooms: usize) -> Self {
+        Self {
+            map: Map::new(width, height),
+            rooms: Vec::with_capacity(number_of_rooms),
+            player: Player::new(0, 0),
+        }
+    }
+    pub fn build(self) -> MapBuilderResult {
+        MapBuilderResult {
+            map: self.map,
+            player: self.player,
+        }
+    }
+}
+
+pub struct MapBuilderResult {
+    pub map: Map,
+    pub player: Player,
+}
 
 pub enum TileType {
     Floor,
@@ -22,16 +51,6 @@ impl Map {
         }
     }
 
-    pub fn idx(&self, x: i32, y: i32) -> Option<usize> {
-        if x < 0 || y < 0 {
-            return None;
-        }
-        if x > self.width || y > self.width {
-            return None;
-        }
-        Some((y * self.width) as usize + x as usize)
-    }
-
     pub fn render(&self, draw: &mut DrawBatch) {
         let fg = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
         for y in 0..self.height {
@@ -49,5 +68,15 @@ impl Map {
                 }
             }
         }
+    }
+
+    fn idx(&self, x: i32, y: i32) -> Option<usize> {
+        if x < 0 || y < 0 {
+            return None;
+        }
+        if x > self.width || y > self.width {
+            return None;
+        }
+        Some((y * self.width) as usize + x as usize)
     }
 }

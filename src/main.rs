@@ -1,13 +1,13 @@
-mod player;
 mod map;
+mod player;
 
 mod prelude {
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DIMENSION_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DIMENSION_HEIGHT: i32 = SCREEN_HEIGHT / 2;
-    pub use crate::player::*;
     pub use crate::map::*;
+    pub use crate::player::*;
     pub use bracket_lib::prelude::*;
 }
 use prelude::*;
@@ -19,10 +19,9 @@ struct State {
 
 impl State {
     fn new() -> Self {
-        Self {
-            player: Player::new(DIMENSION_WIDTH / 2, DIMENSION_HEIGHT / 2),
-            map: Map::new(SCREEN_WIDTH, SCREEN_HEIGHT),
-        }
+        let MapBuilderResult { player, map } =
+            MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 1).build();
+        Self { player, map }
     }
 
     fn render_tick(&mut self, ctx: &mut BTerm) {
