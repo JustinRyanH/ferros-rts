@@ -26,16 +26,20 @@ impl State {
 
     fn render_tick(&mut self, ctx: &mut BTerm) {
         let mut draw = DrawBatch::new();
-        draw.target(0);
-        draw.cls();
-        draw.target(1);
-        draw.cls();
+        Self::clear_targets(&mut draw);
 
         self.player.render(&mut draw);
         self.map.render(&mut draw);
 
         draw.submit(0).expect("Batch Error");
         render_draw_buffer(ctx).expect("Render Error");
+    }
+
+    fn clear_targets(draw: &mut DrawBatch) {
+        draw.target(0);
+        draw.cls();
+        draw.target(1);
+        draw.cls();
     }
 }
 
