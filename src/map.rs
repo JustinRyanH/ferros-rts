@@ -3,9 +3,9 @@ use core::num;
 use crate::prelude::*;
 
 pub struct MapBuilder {
-    map: Map,
-    rooms: Vec<Rect>,
-    player: Player,
+    pub map: Map,
+    pub rooms: Vec<Rect>,
+    pub player: Player,
 }
 
 impl MapBuilder {

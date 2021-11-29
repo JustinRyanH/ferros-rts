@@ -14,8 +14,38 @@ mod prelude {
 }
 use prelude::*;
 
+#[derive(Debug, Clone, Copy)]
+enum BuilderState {
+    Started,
+    Filling,
+    Rooms,
+    ConnectingRooms,
+    PlacingPlayer,
+    Finished,
+}
+
+impl BuilderState {
+    pub fn next(&mut self) {
+        *self = match self {
+            BuilderState::Started => BuilderState::Filling,
+            BuilderState::Filling => BuilderState::Rooms,
+            BuilderState::Rooms => BuilderState::ConnectingRooms,
+            BuilderState::ConnectingRooms => BuilderState::PlacingPlayer,
+            BuilderState::PlacingPlayer => BuilderState::Finished,
+            BuilderState::Finished => BuilderState::Finished,
+        }
+    }
+}
+
+impl Default for BuilderState {
+    fn default() -> Self {
+        Self::Started
+    }
+}
+
 pub struct MapBuilderState {
     builder: MapBuilder,
+    state: BuilderState,
 }
 
 impl MapBuilderState {
@@ -33,7 +63,7 @@ impl MapBuilderState {
         render_draw_buffer(ctx)
     }
 
-    fn draw_menu(draw: &mut DrawBatch) {
+    fn draw_menu(&self, draw: &mut DrawBatch) {
         let margin = 5;
         let menu_width = 20;
         let x = SCREEN_WIDTH - (menu_width + margin);
@@ -63,6 +93,7 @@ impl MapBuilderState {
             .fg(RGB::named(RED))
             .centered("Space to Continue")
             .reset();
+
         block.print(&buf).expect("Text was too big");
         block.render_to_draw_batch(draw);
     }
@@ -75,7 +106,17 @@ impl GameState for MapBuilderState {
 
         self.builder.map.render(&mut draw);
 
-        Self::draw_menu(&mut draw);
+        draw.print_color_centered(
+            4,
+            format!("State: {:?}", self.state),
+            ColorPair::new(WHITE, BLACK),
+        );
+
+        if let Some(VirtualKeyCode::Space) = ctx.key {
+            self.state.next();
+        }
+
+        self.draw_menu(&mut draw);
 
         Self::submit_batch(ctx, &mut draw).unwrap();
     }
@@ -85,6 +126,7 @@ impl Default for MapBuilderState {
     fn default() -> Self {
         Self {
             builder: MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 10),
+            state: BuilderState::default(),
         }
     }
 }
