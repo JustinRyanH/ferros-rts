@@ -73,26 +73,34 @@ impl MapBuilderState {
 
         let mut buf = TextBuilder::empty();
         let mut block = TextBlock::new(x + 1, margin + 1, menu_width - 1, h - 1);
+
+        let fill_map_text = "[ ] Fill Map";
+        let generate_room_text = "[ ] Generate Rooms";
+        let coonnect_rooms_text = "[ ] Connect Rooms";
+        let place_player_text = "[ ] Place Player";
+        let finished_text = "[ ] Finished";
+
         buf.fg(RGB::named(WHITE))
             .bg(RGB::named(BLACK))
             .ln()
             .centered("Map Building")
             .ln()
             .ln()
-            .append("[ ] Fill Map")
+            .append(fill_map_text)
             .ln()
-            .append("[ ] Generate Rooms")
+            .append(generate_room_text)
             .ln()
-            .append("[ ] Connect Rooms")
+            .append(coonnect_rooms_text)
             .ln()
-            .append("[ ] Place Player")
+            .append(place_player_text)
             .ln()
-            .append("[ ] Finished")
+            .append(finished_text)
             .ln()
             .ln()
             .fg(RGB::named(RED))
             .centered("Space to Continue")
             .reset();
+
 
         block.print(&buf).expect("Text was too big");
         block.render_to_draw_batch(draw);
