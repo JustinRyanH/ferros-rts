@@ -35,6 +35,26 @@ impl BuilderState {
             BuilderState::Finished => BuilderState::Finished,
         }
     }
+
+    pub fn has_filled(&self) -> bool {
+        !matches!(self, BuilderState::Started | BuilderState::Filling)
+    }
+
+    pub fn has_build_rooms(&self) -> bool {
+        !matches!(self, BuilderState::Started | BuilderState::Filling | BuilderState::Rooms)
+    }
+
+    pub fn has_connected_rooms(&self) -> bool {
+        matches!(self, BuilderState::PlacingPlayer | BuilderState::Finished)
+    }
+
+    pub fn has_placed_player(&self) -> bool {
+        matches!(self, BuilderState::Finished)
+    }
+
+    pub  fn is_finished(&self) -> bool {
+        matches!(self, BuilderState::Finished)
+    }
 }
 
 impl Default for BuilderState {
@@ -74,11 +94,12 @@ impl MapBuilderState {
         let mut buf = TextBuilder::empty();
         let mut block = TextBlock::new(x + 1, margin + 1, menu_width - 1, h - 1);
 
-        let fill_map_text = "[ ] Fill Map";
-        let generate_room_text = "[ ] Generate Rooms";
-        let coonnect_rooms_text = "[ ] Connect Rooms";
-        let place_player_text = "[ ] Place Player";
-        let finished_text = "[ ] Finished";
+        let fill_map_text = if self.state.has_filled() { "[X] Fill Map" } else { "[ ] Fill Map"};
+        let generate_room_text = if self.state.has_build_rooms() { "[X] Generate Rooms" } else {  "[ ] Generate Rooms" };
+        let coonnect_rooms_text = if self.state.has_connected_rooms() { "[X] Connect Rooms" } else {  "[ ] Connect Rooms" };
+
+        let place_player_text = if self.state.has_placed_player() { "[X] Place Player" } else { "[ ] Place Player"  };
+        let finished_text = if self.state.is_finished() { "[X] Finished" } else {  "[ ] Finished" };
 
         buf.fg(RGB::named(WHITE))
             .bg(RGB::named(BLACK))
@@ -104,6 +125,14 @@ impl MapBuilderState {
 
         block.print(&buf).expect("Text was too big");
         block.render_to_draw_batch(draw);
+
+        match self.state {
+            BuilderState::Filling => { draw.set(Point::new(x + 2, margin + 4), ColorPair::new(BLACK, YELLOW), to_cp437('>')); },
+            BuilderState::Rooms => { draw.set(Point::new(x + 2, margin + 5), ColorPair::new(BLACK, YELLOW), to_cp437('>')); },
+            BuilderState::ConnectingRooms => { draw.set(Point::new(x + 2, margin + 6), ColorPair::new(BLACK, YELLOW), to_cp437('>')); },
+            BuilderState::PlacingPlayer => { draw.set(Point::new(x + 2, margin + 7), ColorPair::new(BLACK, YELLOW), to_cp437('>'));  },
+            _ => {}
+        };
     }
 }
 
@@ -113,12 +142,6 @@ impl GameState for MapBuilderState {
         Self::clear_batch(&mut draw);
 
         self.builder.map.render(&mut draw);
-
-        draw.print_color_centered(
-            4,
-            format!("State: {:?}", self.state),
-            ColorPair::new(WHITE, BLACK),
-        );
 
         if let Some(VirtualKeyCode::Space) = ctx.key {
             self.state.next();
