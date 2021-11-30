@@ -120,13 +120,10 @@ impl MapBuilder {
 
     pub fn render(&self, draw: &mut DrawBatch) {
         self.map.render(draw);
-        match self.state {
-            BuilderState::Rooms => {
-                self.rooms.iter().for_each(|room| {
-                    draw.fill_region(*room, ColorPair::new(RED, BLACK), to_cp437('.'));
-                });
-            }
-            _ => {}
+        if let BuilderState::Rooms = self.state {
+            self.rooms.iter().for_each(|room| {
+                draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
+            });
         };
     }
 
@@ -236,6 +233,16 @@ pub enum TileType {
     Floor,
     Wall,
 }
+
+impl From<TileType> for FontCharType {
+    fn from(val: TileType) -> Self {
+        match val {
+            TileType::Floor => to_cp437(','),
+            TileType::Wall => to_cp437('#'),
+        }
+    }
+}
+
 pub struct Map {
     width: i32,
     height: i32,
@@ -266,10 +273,10 @@ impl Map {
                 if let Some(idx) = self.idx(x, y) {
                     match self.tiles[idx] {
                         TileType::Floor => {
-                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), to_cp437(','));
+                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), TileType::Floor);
                         }
                         TileType::Wall => {
-                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), to_cp437('#'));
+                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), TileType::Wall);
                         }
                     }
                 }
