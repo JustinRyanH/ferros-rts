@@ -267,16 +267,17 @@ impl Map {
 
     pub fn render(&self, draw: &mut DrawBatch) {
         let fg = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
+        let color = ColorPair::new(fg, BLACK);
         for y in 0..self.height {
             for x in 0..self.width {
                 draw.target(0);
                 if let Some(idx) = self.idx(x, y) {
                     match self.tiles[idx] {
                         TileType::Floor => {
-                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), TileType::Floor);
+                            draw.set(Point::new(x, y), color, TileType::Floor);
                         }
                         TileType::Wall => {
-                            draw.set(Point::new(x, y), ColorPair::new(fg, BLACK), TileType::Wall);
+                            draw.set(Point::new(x, y), color, TileType::Wall);
                         }
                     }
                 }
