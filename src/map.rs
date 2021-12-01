@@ -346,14 +346,8 @@ impl Map {
             for x in 0..self.width {
                 draw.target(0);
                 if let Some(idx) = self.idx(x, y) {
-                    match self.tiles[idx] {
-                        TileType::Floor => {
-                            draw.set(Point::new(x, y), color, TileType::Floor);
-                        }
-                        TileType::Wall => {
-                            draw.set(Point::new(x, y), color, TileType::Wall);
-                        }
-                    }
+                    let tile = self.tiles[idx];
+                    draw.set(Point::new(x, y), color, tile);
                 }
             }
         }
