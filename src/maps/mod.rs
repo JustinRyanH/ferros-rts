@@ -164,7 +164,7 @@ impl MapBuilder {
                 draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
             });
         };
-        if let BuilderState::ConnectingRooms = self.state {
+        if let BuilderState::ConnectingRooms | BuilderState::PlacingPlayer = self.state {
             for room in self.rooms.iter() {
                 draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
             }
@@ -172,13 +172,7 @@ impl MapBuilder {
                 tunnel.render(draw);
             }
         }
-        if let BuilderState::PlacingPlayer = self.state {
-            for room in self.rooms.iter() {
-                draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
-            }
-            for tunnel in self.tunnels.iter() {
-                tunnel.render(draw);
-            }
+        if let BuilderState::Finished | BuilderState::PlacingPlayer = self.state {
             self.player.render(draw);
         }
     }
@@ -314,7 +308,7 @@ impl Tunnel {
     }
 
     pub fn render(&self, draw: &mut DrawBatch) {
-        self.into_iter().for_each(|(x, y)| {
+        self.into_iter().for_each(|Point { x, y }| {
             draw.set(
                 Point::new(x, y),
                 ColorPair::new(CYAN, BLACK),
@@ -325,15 +319,15 @@ impl Tunnel {
 }
 
 impl IntoIterator for Tunnel {
-    type Item = (i32, i32);
-    type IntoIter = StaticPairIterator;
+    type Item = Point;
+    type IntoIter = PointLine;
 
     fn into_iter(self) -> Self::IntoIter {
         match self {
             Tunnel::Horizontal { x1, x2, y } => {
                 let current = x1.min(x2);
                 let max = x1.max(x2);
-                StaticPairIterator {
+                PointLine {
                     max,
                     current,
                     static_el: y,
@@ -343,7 +337,7 @@ impl IntoIterator for Tunnel {
             Tunnel::Vertical { y1, y2, x } => {
                 let current = y1.min(y2);
                 let high = y1.max(y2);
-                StaticPairIterator {
+                PointLine {
                     max: high,
                     current,
                     static_el: x,

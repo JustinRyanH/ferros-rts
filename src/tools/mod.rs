@@ -1,12 +1,14 @@
-pub struct StaticPairIterator {
+use crate::prelude::Point;
+
+pub struct PointLine {
     pub max: i32,
     pub current: i32,
     pub static_el: i32,
     pub static_first: bool,
 }
 
-impl Iterator for StaticPairIterator {
-    type Item = (i32, i32);
+impl Iterator for PointLine {
+    type Item = Point;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.current > self.max {
@@ -14,9 +16,9 @@ impl Iterator for StaticPairIterator {
         }
         self.current += 1;
         if self.static_first {
-            Some((self.static_el, self.current))
+            Some(Point::new(self.static_el, self.current))
         } else {
-            Some((self.current, self.static_el))
+            Some(Point::new(self.current, self.static_el))
         }
     }
 }

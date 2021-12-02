@@ -30,7 +30,13 @@ impl Map {
         });
     }
 
-    pub fn carve_tunnel(&mut self, tunnel: &Tunnel, tile: TileType) {}
+    pub fn carve_tunnel(&mut self, tunnel: &Tunnel, tile: TileType) {
+        tunnel.into_iter().for_each(|Point { x, y }| {
+            if let Some(idx) = self.idx(x, y) {
+                self.tiles[idx] = tile;
+            }
+        })
+    }
 
     pub fn render(&self, draw: &mut DrawBatch) {
         let fg = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
