@@ -15,24 +15,24 @@ impl Tunnel {
     }
 
     pub fn render(&self, draw: &mut DrawBatch) {
-        match self.clone() {
+        match *self {
             Tunnel::Horizontal { x1, x2, y } => {
-                for x in x1.min(x2)..=x1.max(x2) {
+                (x1.min(x2)..=x1.max(x2)).for_each(|x| {
                     draw.set(
                         Point::new(x, y),
                         ColorPair::new(CYAN, BLACK),
                         TileType::Floor,
                     );
-                }
+                });
             }
             Tunnel::Vertical { y1, y2, x } => {
-                for y in y1.min(y2)..=y1.max(y2) {
+                (y1.min(y2)..=y1.max(y2)).for_each(|y| {
                     draw.set(
                         Point::new(x, y),
                         ColorPair::new(CYAN, BLACK),
                         TileType::Floor,
                     );
-                }
+                });
             }
         }
     }
