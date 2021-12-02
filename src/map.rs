@@ -1,44 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Clone, Copy)]
-pub enum Tunnel {
-    Horizontal { x1: i32, x2: i32, y: i32 },
-    Vertical { y1: i32, y2: i32, x: i32 },
-}
-
-impl Tunnel {
-    pub fn horizontal(x1: i32, x2: i32, y: i32) -> Tunnel {
-        Tunnel::Horizontal { x1, x2, y }
-    }
-    pub fn vertical(y1: i32, y2: i32, x: i32) -> Tunnel {
-        Tunnel::Vertical { y1, y2, x }
-    }
-
-    pub fn render(&self, draw: &mut DrawBatch) {
-        match *self {
-            Tunnel::Horizontal { x1, x2, y } => {
-                (x1.min(x2)..=x1.max(x2)).for_each(|x| {
-                    draw.set(
-                        Point::new(x, y),
-                        ColorPair::new(CYAN, BLACK),
-                        TileType::Floor,
-                    );
-                });
-            }
-            Tunnel::Vertical { y1, y2, x } => {
-                (y1.min(y2)..=y1.max(y2)).for_each(|y| {
-                    draw.set(
-                        Point::new(x, y),
-                        ColorPair::new(CYAN, BLACK),
-                        TileType::Floor,
-                    );
-                });
-            }
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub enum BuilderState {
     Started,
     Filling,
@@ -125,7 +87,7 @@ impl MapBuilder {
             BuilderState::Rooms => self.build_rooms(rng),
             BuilderState::ConnectingRooms => self.build_tunnels(rng),
             BuilderState::PlacingPlayer => self.place_player(rng),
-            BuilderState::Finished => todo!(),
+            BuilderState::Finished => self.build_map(),
             _ => {}
         }
     }
@@ -164,6 +126,8 @@ impl MapBuilder {
             self.rooms.push(room);
         }
     }
+
+    fn build_map(&mut self) {}
 
     fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
@@ -369,5 +333,83 @@ impl Map {
             return None;
         }
         Some((y * self.width) as usize + x as usize)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Tunnel {
+    Horizontal { x1: i32, x2: i32, y: i32 },
+    Vertical { y1: i32, y2: i32, x: i32 },
+}
+
+impl Tunnel {
+    pub fn horizontal(x1: i32, x2: i32, y: i32) -> Tunnel {
+        Tunnel::Horizontal { x1, x2, y }
+    }
+    pub fn vertical(y1: i32, y2: i32, x: i32) -> Tunnel {
+        Tunnel::Vertical { y1, y2, x }
+    }
+
+    pub fn render(&self, draw: &mut DrawBatch) {
+        self.into_iter().for_each(|(x, y)| {
+            draw.set(
+                Point::new(x, y),
+                ColorPair::new(CYAN, BLACK),
+                TileType::Floor,
+            );
+        });
+    }
+}
+
+pub struct StaticRangeIterator {
+    max: i32,
+    current: i32,
+    static_el: i32,
+    static_first: bool,
+}
+
+impl Iterator for StaticRangeIterator {
+    type Item = (i32, i32);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.current > self.max {
+            return None;
+        }
+        self.current += 1;
+        if self.static_first {
+            Some((self.static_el, self.current))
+        } else {
+            Some((self.current, self.static_el))
+        }
+    }
+}
+
+impl IntoIterator for Tunnel {
+    type Item = (i32, i32);
+    type IntoIter = StaticRangeIterator;
+
+    fn into_iter(self) -> Self::IntoIter {
+        match self {
+            Tunnel::Horizontal { x1, x2, y } => {
+                let current = x1.min(x2);
+                let max = x1.max(x2);
+                StaticRangeIterator {
+                    max,
+                    current,
+                    static_el: y,
+                    static_first: false,
+                }
+            }
+            Tunnel::Vertical { y1, y2, x } => {
+                let current = y1.min(y2);
+                let high = y1.max(y2);
+                StaticRangeIterator {
+                    max: high,
+                    current,
+                    static_el: x,
+                    static_first: true,
+                }
+            }
+        }
     }
 }
