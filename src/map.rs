@@ -158,9 +158,10 @@ impl MapBuilder {
                 }
             }
 
-            if !overlap {
-                self.rooms.push(room);
+            if overlap {
+                continue;
             }
+            self.rooms.push(room);
         }
     }
 
