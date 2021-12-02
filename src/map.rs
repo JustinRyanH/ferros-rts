@@ -361,14 +361,14 @@ impl Tunnel {
     }
 }
 
-pub struct StaticRangeIterator {
+pub struct StaticPairIterator {
     max: i32,
     current: i32,
     static_el: i32,
     static_first: bool,
 }
 
-impl Iterator for StaticRangeIterator {
+impl Iterator for StaticPairIterator {
     type Item = (i32, i32);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -386,14 +386,14 @@ impl Iterator for StaticRangeIterator {
 
 impl IntoIterator for Tunnel {
     type Item = (i32, i32);
-    type IntoIter = StaticRangeIterator;
+    type IntoIter = StaticPairIterator;
 
     fn into_iter(self) -> Self::IntoIter {
         match self {
             Tunnel::Horizontal { x1, x2, y } => {
                 let current = x1.min(x2);
                 let max = x1.max(x2);
-                StaticRangeIterator {
+                StaticPairIterator {
                     max,
                     current,
                     static_el: y,
@@ -403,7 +403,7 @@ impl IntoIterator for Tunnel {
             Tunnel::Vertical { y1, y2, x } => {
                 let current = y1.min(y2);
                 let high = y1.max(y2);
-                StaticRangeIterator {
+                StaticPairIterator {
                     max: high,
                     current,
                     static_el: x,
