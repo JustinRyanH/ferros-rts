@@ -361,29 +361,6 @@ impl Tunnel {
     }
 }
 
-pub struct StaticPairIterator {
-    max: i32,
-    current: i32,
-    static_el: i32,
-    static_first: bool,
-}
-
-impl Iterator for StaticPairIterator {
-    type Item = (i32, i32);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.current > self.max {
-            return None;
-        }
-        self.current += 1;
-        if self.static_first {
-            Some((self.static_el, self.current))
-        } else {
-            Some((self.current, self.static_el))
-        }
-    }
-}
-
 impl IntoIterator for Tunnel {
     type Item = (i32, i32);
     type IntoIter = StaticPairIterator;
