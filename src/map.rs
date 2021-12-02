@@ -158,14 +158,6 @@ impl MapBuilder {
         }
     }
 
-    fn vertical_tunnel(&self, y1: i32, y2: i32, x: i32) -> (Point, Point) {
-        (Point::new(x, y1), Point::new(x, y2))
-    }
-
-    fn horizontal_tunnel(&self, x1: i32, x2: i32, y: i32) -> (Point, Point) {
-        (Point::new(x1, y), Point::new(x2, y))
-    }
-
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
