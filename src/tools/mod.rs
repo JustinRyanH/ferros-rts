@@ -7,6 +7,15 @@ pub struct PointLine {
     pub static_first: bool,
 }
 
+impl PointLine {
+    fn get_new_point(&self) -> Point {
+        match self.static_first {
+            true => Point::new(self.static_el, self.current),
+            false => Point::new(self.current, self.static_el),
+        }
+    }
+}
+
 impl Iterator for PointLine {
     type Item = Point;
 
@@ -14,11 +23,8 @@ impl Iterator for PointLine {
         if self.current > self.max {
             return None;
         }
+        let new_point = self.get_new_point();
         self.current += 1;
-        if self.static_first {
-            Some(Point::new(self.static_el, self.current))
-        } else {
-            Some(Point::new(self.current, self.static_el))
-        }
+        Some(new_point)
     }
 }
