@@ -130,7 +130,14 @@ impl MapBuilder {
         }
     }
 
-    fn build_map(&mut self) {}
+    fn build_map(&mut self) {
+        for room in self.rooms.iter() {
+            self.map.carve_room(room, TileType::Floor);
+        }
+        for tunnel in self.tunnels.iter() {
+            self.map.carve_tunnel(tunnel, TileType::Floor);
+        }
+    }
 
     fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
