@@ -124,7 +124,7 @@ impl MapBuilder {
             BuilderState::Filling => self.fill(),
             BuilderState::Rooms => self.build_rooms(rng),
             BuilderState::ConnectingRooms => self.build_tunnels(rng),
-            BuilderState::PlacingPlayer => todo!(),
+            BuilderState::PlacingPlayer => self.place_player(rng),
             BuilderState::Finished => todo!(),
             _ => {}
         }
@@ -134,7 +134,13 @@ impl MapBuilder {
         self.map.fill(TileType::Wall);
     }
 
-    pub fn build_rooms(&mut self, rng: &mut RandomNumberGenerator) {
+    fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
+        let room = rng.range(0, self.num_of_rooms);
+        let room = self.rooms[room].center();
+        self.player.position = room;
+    }
+
+    fn build_rooms(&mut self, rng: &mut RandomNumberGenerator) {
         while self.rooms.len() < self.num_of_rooms {
             let max_room_size = 10;
             let room = Rect::with_size(
@@ -158,7 +164,7 @@ impl MapBuilder {
         }
     }
 
-    pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
+    fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -179,9 +185,9 @@ impl MapBuilder {
     pub fn render(&self, draw: &mut DrawBatch) {
         self.map.render(draw);
         if let BuilderState::Rooms = self.state {
-            for room in self.rooms.iter() {
+            self.rooms.iter().for_each(|room| {
                 draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
-            }
+            });
         };
         if let BuilderState::ConnectingRooms = self.state {
             for room in self.rooms.iter() {
@@ -190,6 +196,15 @@ impl MapBuilder {
             for tunnel in self.tunnels.iter() {
                 tunnel.render(draw);
             }
+        }
+        if let BuilderState::PlacingPlayer = self.state {
+            for room in self.rooms.iter() {
+                draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
+            }
+            for tunnel in self.tunnels.iter() {
+                tunnel.render(draw);
+            }
+            self.player.render(draw);
         }
     }
 
