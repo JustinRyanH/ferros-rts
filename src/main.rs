@@ -19,6 +19,7 @@ pub struct MapBuilderState {
     generator: GeneraotrRunner,
     builder: MapBuilder,
     rng: RandomNumberGenerator,
+    render_map: Option<()>,
 }
 
 impl MapBuilderState {
@@ -46,19 +47,24 @@ impl GameState for MapBuilderState {
             self.generator.next(&mut self.builder, &mut self.rng);
         }
 
-        self.builder.render(&mut draw);
-        self.generator.render_menu(&mut draw);
-
-        if self.generator.is_finished() {
+        draw.target(0);
+        if let Some(()) = self.render_map {
             let MapResult { map, player } = self.builder.build_map();
             map.render(&mut draw);
             if let Some(player) = player {
+                draw.target(1);
                 player.render(&mut draw);
             }
         } else {
+            self.builder.render(&mut draw);
+            draw.target(1);
+            self.generator.render_menu(&mut draw);
         }
 
         Self::submit_batch(ctx, &mut draw).unwrap();
+        if self.generator.is_finished() {
+            self.render_map = Some(());
+        }
     }
 }
 
@@ -77,6 +83,7 @@ impl Default for MapBuilderState {
             builder: MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 10),
             rng: RandomNumberGenerator::new(),
             generator,
+            render_map: None,
         }
     }
 }
