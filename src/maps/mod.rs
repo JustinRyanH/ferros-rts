@@ -34,14 +34,16 @@ impl MapBuilder {
         }
     }
 
-    pub fn fill(&mut self, tile: &TileType) {
+    pub fn fill(&mut self, tile: &TileType) -> BuildCommandResult {
         self.fill_tile = Some(*tile);
+        BuildCommandResult::Finished
     }
 
-    pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
+    pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
         let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
         self.player = Some(Player::new(room.x, room.y));
+        BuildCommandResult::Finished
     }
 
     pub fn build_room(
@@ -66,24 +68,7 @@ impl MapBuilder {
         BuildCommandResult::NotFinished
     }
 
-    pub fn build_map(&mut self) -> MapResult {
-        let mut map = Map::new(self.width, self.height);
-        for tile in self.fill_tile.iter() {
-            map.fill(*tile);
-        }
-        for room in self.rooms.iter() {
-            map.carve_room(room, TileType::Floor);
-        }
-        for tunnel in self.tunnels.iter() {
-            map.carve_tunnel(tunnel, TileType::Floor);
-        }
-        MapResult {
-            map,
-            player: self.player,
-        }
-    }
-
-    pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
+    pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -98,6 +83,24 @@ impl MapBuilder {
                 self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
                 self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
             }
+        }
+        BuildCommandResult::Finished
+    }
+
+    pub fn build_map(&mut self) -> MapResult {
+        let mut map = Map::new(self.width, self.height);
+        for tile in self.fill_tile.iter() {
+            map.fill(*tile);
+        }
+        for room in self.rooms.iter() {
+            map.carve_room(room, TileType::Floor);
+        }
+        for tunnel in self.tunnels.iter() {
+            map.carve_tunnel(tunnel, TileType::Floor);
+        }
+        MapResult {
+            map,
+            player: self.player,
         }
     }
 

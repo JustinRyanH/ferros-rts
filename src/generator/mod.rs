@@ -28,7 +28,9 @@ impl GeneratorCommand {
 
     pub fn perform(&self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
         match self {
-            GeneratorCommand::FillMap(tile) => builder.fill(tile),
+            GeneratorCommand::FillMap(tile) => {
+                builder.fill(tile);
+            }
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
                 max_room_size,
@@ -40,7 +42,9 @@ impl GeneratorCommand {
             GeneratorCommand::PlacePlayerInRoom => {
                 builder.place_player(rng);
             }
-            GeneratorCommand::Tunnel => builder.build_tunnels(rng),
+            GeneratorCommand::Tunnel => {
+                builder.build_tunnels(rng);
+            }
         }
     }
 }
