@@ -43,12 +43,20 @@ impl GameState for MapBuilderState {
         Self::clear_batch(&mut draw);
 
         if let Some(VirtualKeyCode::Space) = ctx.key {
-            // self.builder.next(&mut self.rng);
             self.generator.next(&mut self.builder, &mut self.rng);
         }
 
         self.builder.render(&mut draw);
         self.generator.render_menu(&mut draw);
+
+        if self.generator.is_finished() {
+            let MapResult { map, player } = self.builder.build_map();
+            map.render(&mut draw);
+            if let Some(player) = player {
+                player.render(&mut draw);
+            }
+        } else {
+        }
 
         Self::submit_batch(ctx, &mut draw).unwrap();
     }

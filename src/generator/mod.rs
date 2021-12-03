@@ -5,6 +5,7 @@ pub use tunnel::*;
 
 use crate::prelude::{BuildCommandResult, MapBuilder, TileType, SCREEN_WIDTH};
 
+#[derive(Debug, Clone, Copy)]
 pub enum GeneratorCommand {
     FillMap(TileType),
     GenerateRooms {
@@ -36,7 +37,9 @@ impl GeneratorCommand {
                     builder.build_room(*num_of_rooms, *max_room_size, rng)
                 {}
             }
-            GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
+            GeneratorCommand::PlacePlayerInRoom => {
+                builder.place_player(rng);
+            }
             GeneratorCommand::Tunnel => builder.build_tunnels(rng),
         }
     }
@@ -55,8 +58,12 @@ impl GeneraotrRunner {
         }
     }
 
+    pub fn is_finished(&self) -> bool {
+        self.run_index >= self.commands.len()
+    }
+
     pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
-        if self.run_index >= self.commands.len() {
+        if self.is_finished() {
             return;
         }
         self.commands[self.run_index].perform(builder, rng);

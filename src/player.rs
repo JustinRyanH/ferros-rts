@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Player {
     pub position: Point,
     pub color: ColorPair,

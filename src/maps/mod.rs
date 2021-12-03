@@ -1,7 +1,12 @@
-// mod map;
+mod map;
 
-// pub use map::*;
 use crate::prelude::*;
+pub use map::*;
+
+pub struct MapResult {
+    pub map: Map,
+    pub player: Option<Player>,
+}
 
 pub enum BuildCommandResult {
     NotFinished,
@@ -61,14 +66,22 @@ impl MapBuilder {
         BuildCommandResult::NotFinished
     }
 
-    // pub fn build_map(&mut self) {
-    //     for room in self.rooms.iter() {
-    //         self.map.carve_room(room, TileType::Floor);
-    //     }
-    //     for tunnel in self.tunnels.iter() {
-    //         self.map.carve_tunnel(tunnel, TileType::Floor);
-    //     }
-    // }
+    pub fn build_map(&mut self) -> MapResult {
+        let mut map = Map::new(self.width, self.height);
+        for tile in self.fill_tile.iter() {
+            map.fill(*tile);
+        }
+        for room in self.rooms.iter() {
+            map.carve_room(room, TileType::Floor);
+        }
+        for tunnel in self.tunnels.iter() {
+            map.carve_tunnel(tunnel, TileType::Floor);
+        }
+        MapResult {
+            map,
+            player: self.player,
+        }
+    }
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
