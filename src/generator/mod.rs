@@ -3,7 +3,7 @@ mod tunnel;
 use bracket_lib::prelude::*;
 pub use tunnel::*;
 
-use crate::prelude::{MapBuilder, TileType, SCREEN_WIDTH};
+use crate::prelude::{BuildCommandResult, MapBuilder, TileType, SCREEN_WIDTH};
 
 pub enum GeneratorCommand {
     FillMap(TileType),
@@ -31,7 +31,11 @@ impl GeneratorCommand {
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
                 max_room_size,
-            } => builder.build_rooms(*num_of_rooms, *max_room_size, rng),
+            } => {
+                while let BuildCommandResult::NotFinished =
+                    builder.build_rooms(*num_of_rooms, *max_room_size, rng)
+                {}
+            }
             GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
             GeneratorCommand::Tunnel => builder.build_tunnels(rng),
         }

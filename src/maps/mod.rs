@@ -1,6 +1,13 @@
 mod map;
 
+use core::num;
+
 pub use map::*;
+
+pub enum BuildCommandResult {
+    NotFinished,
+    Finished,
+}
 
 pub struct MapBuilder {
     pub map: Map,
@@ -30,28 +37,22 @@ impl MapBuilder {
         num_of_rooms: i32,
         max_room_size: i32,
         rng: &mut RandomNumberGenerator,
-    ) {
-        while self.rooms.len() < num_of_rooms as usize {
-            let room = Rect::with_size(
-                rng.range(1, self.map.width - max_room_size),
-                rng.range(1, self.map.height - max_room_size),
-                rng.range(2, max_room_size),
-                rng.range(2, max_room_size),
-            );
+    ) -> BuildCommandResult {
+        if self.rooms.len() >= num_of_rooms as usize {
+            return BuildCommandResult::Finished;
+        }
+        let room = Rect::with_size(
+            rng.range(1, self.map.width - max_room_size),
+            rng.range(1, self.map.height - max_room_size),
+            rng.range(2, max_room_size),
+            rng.range(2, max_room_size),
+        );
 
-            let mut overlap = false;
-            // This can be skipped forward
-            for r in self.rooms.iter() {
-                if r.intersect(&room) {
-                    overlap = true;
-                }
-            }
-
-            if overlap {
-                continue;
-            }
+        let overlap = self.rooms.iter().find(|r| r.intersect(&room)).is_some();
+        if !overlap {
             self.rooms.push(room);
         }
+        return BuildCommandResult::NotFinished;
     }
 
     pub fn build_map(&mut self) {
