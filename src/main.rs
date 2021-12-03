@@ -18,7 +18,7 @@ mod prelude {
 }
 use prelude::*;
 pub struct MapBuilderState {
-    generator: MapGenerator,
+    generator: GeneraotrRunner,
     builder: MapBuilder,
     rng: RandomNumberGenerator,
 }
@@ -46,12 +46,11 @@ impl GameState for MapBuilderState {
 
         if let Some(VirtualKeyCode::Space) = ctx.key {
             self.builder.next(&mut self.rng);
-            self.generator.next();
+            self.generator.next(&mut self.builder, &mut self.rng);
         }
 
         self.builder.render(&mut draw);
         self.generator.render_menu(&mut draw);
-        // self.builder.draw_menu(&mut draw);
 
         Self::submit_batch(ctx, &mut draw).unwrap();
     }
@@ -59,7 +58,7 @@ impl GameState for MapBuilderState {
 
 impl Default for MapBuilderState {
     fn default() -> Self {
-        let generator = MapGenerator::new(vec![
+        let generator = GeneraotrRunner::new(vec![
             GeneratorCommand::FillMap(TileType::Floor),
             GeneratorCommand::GenerateRooms {
                 num_of_rooms: 10,

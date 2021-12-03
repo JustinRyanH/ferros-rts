@@ -3,7 +3,7 @@ mod tunnel;
 use bracket_lib::prelude::*;
 pub use tunnel::*;
 
-use crate::prelude::{TileType, SCREEN_WIDTH};
+use crate::prelude::{MapBuilder, TileType, SCREEN_WIDTH};
 
 pub enum GeneratorCommand {
     FillMap(TileType),
@@ -26,12 +26,12 @@ impl GeneratorCommand {
     }
 }
 
-pub struct MapGenerator {
+pub struct GeneraotrRunner {
     pub commands: Vec<GeneratorCommand>,
     pub run_index: usize,
 }
 
-impl MapGenerator {
+impl GeneraotrRunner {
     pub fn new(commands: Vec<GeneratorCommand>) -> Self {
         Self {
             commands,
@@ -39,7 +39,7 @@ impl MapGenerator {
         }
     }
 
-    pub fn next(&mut self) {
+    pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
         if self.run_index >= self.commands.len() {
             return;
         }
