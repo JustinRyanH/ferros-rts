@@ -31,7 +31,7 @@ impl GeneratorCommand {
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
                 max_room_size,
-            } => builder.build_rooms(rng),
+            } => builder.build_rooms(*num_of_rooms, *max_room_size, rng),
             GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
             GeneratorCommand::Tunnel => builder.build_tunnels(rng),
         }

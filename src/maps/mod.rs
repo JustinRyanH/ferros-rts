@@ -4,7 +4,6 @@ pub use map::*;
 
 pub struct MapBuilder {
     pub map: Map,
-    pub num_of_rooms: usize,
     pub rooms: Vec<Rect>,
     pub tunnels: Vec<Tunnel>,
     pub player: Player,
@@ -17,7 +16,6 @@ impl MapBuilder {
             rooms: Vec::with_capacity(number_of_rooms),
             tunnels: Vec::with_capacity(number_of_rooms * 2),
             player: Player::new(0, 0),
-            num_of_rooms: number_of_rooms,
         }
     }
 
@@ -33,14 +31,18 @@ impl MapBuilder {
     }
 
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
-        let room = rng.range(0, self.num_of_rooms);
+        let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
         self.player.position = room;
     }
 
-    pub fn build_rooms(&mut self, rng: &mut RandomNumberGenerator) {
-        while self.rooms.len() < self.num_of_rooms {
-            let max_room_size = 10;
+    pub fn build_rooms(
+        &mut self,
+        num_of_rooms: i32,
+        max_room_size: i32,
+        rng: &mut RandomNumberGenerator,
+    ) {
+        while self.rooms.len() < num_of_rooms as usize {
             let room = Rect::with_size(
                 rng.range(1, self.map.width - max_room_size),
                 rng.range(1, self.map.height - max_room_size),
