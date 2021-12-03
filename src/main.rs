@@ -1,3 +1,4 @@
+mod generator;
 mod maps;
 mod player;
 mod player_state;
@@ -8,6 +9,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DIMENSION_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DIMENSION_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub use crate::generator::*;
     pub use crate::maps::*;
     pub use crate::player::*;
     pub use crate::player_state::*;
