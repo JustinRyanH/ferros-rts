@@ -19,10 +19,6 @@ impl MapBuilder {
         }
     }
 
-    pub fn fill(&mut self) {
-        self.map.fill(TileType::Wall);
-    }
-
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
         let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
