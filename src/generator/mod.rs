@@ -24,6 +24,18 @@ impl GeneratorCommand {
             GeneratorCommand::Tunnel => "Connect Rooms",
         }
     }
+
+    pub fn perform(&self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
+        match self {
+            GeneratorCommand::FillMap(tile) => builder.map.fill(tile.clone()),
+            GeneratorCommand::GenerateRooms {
+                num_of_rooms,
+                max_room_size,
+            } => builder.build_rooms(rng),
+            GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
+            GeneratorCommand::Tunnel => builder.build_tunnels(rng),
+        }
+    }
 }
 
 pub struct GeneraotrRunner {
@@ -43,6 +55,7 @@ impl GeneraotrRunner {
         if self.run_index >= self.commands.len() {
             return;
         }
+        self.commands[self.run_index].perform(builder, rng);
         self.run_index += 1;
     }
 

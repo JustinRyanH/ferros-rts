@@ -45,7 +45,7 @@ impl GameState for MapBuilderState {
         Self::clear_batch(&mut draw);
 
         if let Some(VirtualKeyCode::Space) = ctx.key {
-            self.builder.next(&mut self.rng);
+            // self.builder.next(&mut self.rng);
             self.generator.next(&mut self.builder, &mut self.rng);
         }
 
@@ -59,7 +59,7 @@ impl GameState for MapBuilderState {
 impl Default for MapBuilderState {
     fn default() -> Self {
         let generator = GeneraotrRunner::new(vec![
-            GeneratorCommand::FillMap(TileType::Floor),
+            GeneratorCommand::FillMap(TileType::Wall),
             GeneratorCommand::GenerateRooms {
                 num_of_rooms: 10,
                 max_room_size: 10,

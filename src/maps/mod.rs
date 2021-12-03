@@ -75,13 +75,13 @@ impl MapBuilder {
         self.map.fill(TileType::Wall);
     }
 
-    fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
+    pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
         let room = rng.range(0, self.num_of_rooms);
         let room = self.rooms[room].center();
         self.player.position = room;
     }
 
-    fn build_rooms(&mut self, rng: &mut RandomNumberGenerator) {
+    pub fn build_rooms(&mut self, rng: &mut RandomNumberGenerator) {
         while self.rooms.len() < self.num_of_rooms {
             let max_room_size = 10;
             let room = Rect::with_size(
@@ -106,7 +106,7 @@ impl MapBuilder {
         }
     }
 
-    fn build_map(&mut self) {
+    pub fn build_map(&mut self) {
         for room in self.rooms.iter() {
             self.map.carve_room(room, TileType::Floor);
         }
@@ -115,7 +115,7 @@ impl MapBuilder {
         }
     }
 
-    fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
+    pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -135,22 +135,13 @@ impl MapBuilder {
 
     pub fn render(&self, draw: &mut DrawBatch) {
         self.map.render(draw);
-        if let BuilderState::Rooms = self.state {
-            self.rooms.iter().for_each(|room| {
-                draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
-            });
-        };
-        if let BuilderState::ConnectingRooms | BuilderState::PlacingPlayer = self.state {
-            for room in self.rooms.iter() {
-                draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
-            }
-            for tunnel in self.tunnels.iter() {
-                tunnel.render(draw);
-            }
+        for room in self.rooms.iter() {
+            draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
         }
-        if let BuilderState::Finished | BuilderState::PlacingPlayer = self.state {
-            self.player.render(draw);
+        for tunnel in self.tunnels.iter() {
+            tunnel.render(draw);
         }
+        self.player.render(draw);
     }
 }
 
