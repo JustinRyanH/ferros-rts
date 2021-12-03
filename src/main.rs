@@ -1,7 +1,6 @@
 mod generator;
 mod maps;
 mod player;
-mod player_state;
 mod tools;
 
 mod prelude {
@@ -12,7 +11,6 @@ mod prelude {
     pub use crate::generator::*;
     pub use crate::maps::*;
     pub use crate::player::*;
-    pub use crate::player_state::*;
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
 }

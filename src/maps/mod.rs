@@ -6,7 +6,7 @@ pub struct MapBuilder {
     pub map: Map,
     pub rooms: Vec<Rect>,
     pub tunnels: Vec<Tunnel>,
-    pub player: Player,
+    pub player: Option<Player>,
 }
 
 impl MapBuilder {
@@ -15,14 +15,7 @@ impl MapBuilder {
             map: Map::new(width, height),
             rooms: Vec::with_capacity(number_of_rooms),
             tunnels: Vec::with_capacity(number_of_rooms * 2),
-            player: Player::new(0, 0),
-        }
-    }
-
-    pub fn build(self) -> MapBuilderResult {
-        MapBuilderResult {
-            map: self.map,
-            player: self.player,
+            player: None,
         }
     }
 
@@ -33,7 +26,7 @@ impl MapBuilder {
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
         let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
-        self.player.position = room;
+        self.player = Some(Player::new(room.x, room.y));
     }
 
     pub fn build_rooms(
@@ -100,13 +93,10 @@ impl MapBuilder {
         for tunnel in self.tunnels.iter() {
             tunnel.render(draw);
         }
-        self.player.render(draw);
+        for player in self.player.iter() {
+            player.render(draw)
+        }
     }
-}
-
-pub struct MapBuilderResult {
-    pub map: Map,
-    pub player: Player,
 }
 
 #[derive(Debug, Clone, Copy)]
