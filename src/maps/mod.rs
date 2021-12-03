@@ -1,8 +1,7 @@
-mod map;
+// mod map;
 
-use core::num;
-
-pub use map::*;
+// pub use map::*;
+use crate::prelude::*;
 
 pub enum BuildCommandResult {
     NotFinished,
@@ -10,20 +9,28 @@ pub enum BuildCommandResult {
 }
 
 pub struct MapBuilder {
-    pub map: Map,
+    pub width: i32,
+    pub height: i32,
     pub rooms: Vec<Rect>,
     pub tunnels: Vec<Tunnel>,
     pub player: Option<Player>,
+    pub fill_tile: Option<TileType>,
 }
 
 impl MapBuilder {
     pub fn new(width: i32, height: i32, number_of_rooms: usize) -> Self {
         Self {
-            map: Map::new(width, height),
+            width,
+            height,
             rooms: Vec::with_capacity(number_of_rooms),
             tunnels: Vec::with_capacity(number_of_rooms * 2),
             player: None,
+            fill_tile: None,
         }
+    }
+
+    pub fn fill(&mut self, tile: &TileType) {
+        self.fill_tile = Some(*tile);
     }
 
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) {
@@ -32,7 +39,7 @@ impl MapBuilder {
         self.player = Some(Player::new(room.x, room.y));
     }
 
-    pub fn build_rooms(
+    pub fn build_room(
         &mut self,
         num_of_rooms: i32,
         max_room_size: i32,
@@ -42,27 +49,26 @@ impl MapBuilder {
             return BuildCommandResult::Finished;
         }
         let room = Rect::with_size(
-            rng.range(1, self.map.width - max_room_size),
-            rng.range(1, self.map.height - max_room_size),
+            rng.range(1, self.width - max_room_size),
+            rng.range(1, self.height - max_room_size),
             rng.range(2, max_room_size),
             rng.range(2, max_room_size),
         );
 
-        let overlap = self.rooms.iter().find(|r| r.intersect(&room)).is_some();
-        if !overlap {
+        if !self.rooms.iter().any(|r| r.intersect(&room)) {
             self.rooms.push(room);
         }
-        return BuildCommandResult::NotFinished;
+        BuildCommandResult::NotFinished
     }
 
-    pub fn build_map(&mut self) {
-        for room in self.rooms.iter() {
-            self.map.carve_room(room, TileType::Floor);
-        }
-        for tunnel in self.tunnels.iter() {
-            self.map.carve_tunnel(tunnel, TileType::Floor);
-        }
-    }
+    // pub fn build_map(&mut self) {
+    //     for room in self.rooms.iter() {
+    //         self.map.carve_room(room, TileType::Floor);
+    //     }
+    //     for tunnel in self.tunnels.iter() {
+    //         self.map.carve_tunnel(tunnel, TileType::Floor);
+    //     }
+    // }
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) {
         let mut rooms = self.rooms.clone();
@@ -83,7 +89,10 @@ impl MapBuilder {
     }
 
     pub fn render(&self, draw: &mut DrawBatch) {
-        self.map.render(draw);
+        for tile in self.fill_tile.iter() {
+            let region = Rect::with_size(0, 0, self.width, self.height);
+            draw.fill_region(region, ColorPair::new(YELLOW, BLACK), *tile);
+        }
         for room in self.rooms.iter() {
             draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
         }
