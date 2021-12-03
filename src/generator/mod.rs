@@ -36,12 +36,7 @@ impl GeneratorCommand {
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
                 max_room_size,
-            } => {
-                while let BuildCommandResult::NotFinished =
-                    builder.build_room(*num_of_rooms, *max_room_size, rng)
-                {}
-                BuildCommandResult::Finished
-            }
+            } => builder.build_room(*num_of_rooms, *max_room_size, rng),
             GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
             GeneratorCommand::Tunnel => builder.build_tunnels(rng),
         }
