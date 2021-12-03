@@ -20,6 +20,7 @@ pub struct MapBuilderState {
     builder: MapBuilder,
     rng: RandomNumberGenerator,
     render_map: Option<()>,
+    show_menu: bool,
 }
 
 impl MapBuilderState {
@@ -84,6 +85,7 @@ impl Default for MapBuilderState {
             rng: RandomNumberGenerator::new(),
             generator,
             render_map: None,
+            show_menu: false,
         }
     }
 }
