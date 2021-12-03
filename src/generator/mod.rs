@@ -26,11 +26,13 @@ impl GeneratorCommand {
         }
     }
 
-    pub fn perform(&self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
+    pub fn perform(
+        &self,
+        builder: &mut MapBuilder,
+        rng: &mut RandomNumberGenerator,
+    ) -> BuildCommandResult {
         match self {
-            GeneratorCommand::FillMap(tile) => {
-                builder.fill(tile);
-            }
+            GeneratorCommand::FillMap(tile) => builder.fill(tile),
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
                 max_room_size,
@@ -38,13 +40,10 @@ impl GeneratorCommand {
                 while let BuildCommandResult::NotFinished =
                     builder.build_room(*num_of_rooms, *max_room_size, rng)
                 {}
+                BuildCommandResult::Finished
             }
-            GeneratorCommand::PlacePlayerInRoom => {
-                builder.place_player(rng);
-            }
-            GeneratorCommand::Tunnel => {
-                builder.build_tunnels(rng);
-            }
+            GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
+            GeneratorCommand::Tunnel => builder.build_tunnels(rng),
         }
     }
 }
