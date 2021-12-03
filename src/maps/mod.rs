@@ -2,42 +2,12 @@ mod map;
 
 pub use map::*;
 
-#[derive(Clone, Copy, Debug)]
-pub enum BuilderState {
-    Started,
-    Filling,
-    Rooms,
-    ConnectingRooms,
-    PlacingPlayer,
-    Finished,
-}
-
-impl BuilderState {
-    pub fn next(&mut self) {
-        *self = match self {
-            BuilderState::Started => BuilderState::Filling,
-            BuilderState::Filling => BuilderState::Rooms,
-            BuilderState::Rooms => BuilderState::ConnectingRooms,
-            BuilderState::ConnectingRooms => BuilderState::PlacingPlayer,
-            BuilderState::PlacingPlayer => BuilderState::Finished,
-            BuilderState::Finished => BuilderState::Finished,
-        }
-    }
-}
-
-impl Default for BuilderState {
-    fn default() -> Self {
-        Self::Started
-    }
-}
-
 pub struct MapBuilder {
     pub map: Map,
     pub num_of_rooms: usize,
     pub rooms: Vec<Rect>,
     pub tunnels: Vec<Tunnel>,
     pub player: Player,
-    pub state: BuilderState,
 }
 
 impl MapBuilder {
@@ -47,7 +17,6 @@ impl MapBuilder {
             rooms: Vec::with_capacity(number_of_rooms),
             tunnels: Vec::with_capacity(number_of_rooms * 2),
             player: Player::new(0, 0),
-            state: BuilderState::default(),
             num_of_rooms: number_of_rooms,
         }
     }
@@ -56,18 +25,6 @@ impl MapBuilder {
         MapBuilderResult {
             map: self.map,
             player: self.player,
-        }
-    }
-
-    pub fn next(&mut self, rng: &mut RandomNumberGenerator) {
-        self.state.next();
-        match self.state {
-            BuilderState::Filling => self.fill(),
-            BuilderState::Rooms => self.build_rooms(rng),
-            BuilderState::ConnectingRooms => self.build_tunnels(rng),
-            BuilderState::PlacingPlayer => self.place_player(rng),
-            BuilderState::Finished => self.build_map(),
-            _ => {}
         }
     }
 
