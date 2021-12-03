@@ -69,8 +69,9 @@ impl GeneraotrRunner {
         if self.is_finished() {
             return;
         }
-        self.commands[self.run_index].perform(builder, rng);
-        self.run_index += 1;
+        if let BuildCommandResult::Finished = self.commands[self.run_index].perform(builder, rng) {
+            self.run_index += 1;
+        }
     }
 
     pub fn render_menu(&self, draw: &mut DrawBatch) {
