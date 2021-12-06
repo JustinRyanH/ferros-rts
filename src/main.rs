@@ -62,12 +62,10 @@ impl GameState for MapBuilderState {
             let MapResult { map, player } = self.builder.build_map();
             map.render(&mut draw);
             if let Some(player) = player {
-                draw.target(1);
                 player.render(&mut draw);
             }
         } else {
             self.builder.render(&mut draw);
-            draw.target(1);
             if self.show_menu {
                 self.generator.render_menu(&mut draw);
             }
