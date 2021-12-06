@@ -76,9 +76,22 @@ impl MapBuilder {
             return BuildCommandResult::Finished;
         }
 
-        for (i, room) in self.rooms.iter().enumerate().skip(1) {
+        if self.tunnels.len() == 0 {
+            let prev = self.rooms[0].center();
+            let new = self.rooms[1].center();
+
+            if rng.range(0, 2) == 1 {
+                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
+                self.tunnels.push(Tunnel::vertical(prev.y, new.y, new.x));
+            } else {
+                self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
+                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
+            }
+        } else {
+            let i = (self.tunnels.len() / 2) + 1;
+
             let prev = self.rooms[i - 1].center();
-            let new = room.center();
+            let new = self.rooms[i].center();
 
             if rng.range(0, 2) == 1 {
                 self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
@@ -88,7 +101,6 @@ impl MapBuilder {
                 self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
             }
         }
-        assert_eq!(max_tunnels, self.tunnels.len());
         BuildCommandResult::NotFinished
     }
 
