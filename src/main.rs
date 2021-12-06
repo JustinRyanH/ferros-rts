@@ -14,6 +14,7 @@ mod prelude {
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
 }
+
 use prelude::*;
 pub struct MapBuilderState {
     generator: GeneraotrRunner,

@@ -53,8 +53,10 @@ impl MapBuilder {
         rng: &mut RandomNumberGenerator,
     ) -> BuildCommandResult {
         if self.rooms.len() >= num_of_rooms as usize {
+            self.rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
             return BuildCommandResult::Finished;
         }
+
         let room = Rect::with_size(
             rng.range(1, self.width - max_room_size),
             rng.range(1, self.height - max_room_size),
@@ -69,11 +71,9 @@ impl MapBuilder {
     }
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
-        let mut rooms = self.rooms.clone();
-        rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
-
-        for (i, room) in rooms.iter().enumerate().skip(1) {
-            let prev = rooms[i - 1].center();
+        let max_tunnels = self.rooms.len() * 2 - 2;
+        for (i, room) in self.rooms.iter().enumerate().skip(1) {
+            let prev = self.rooms[i - 1].center();
             let new = room.center();
 
             if rng.range(0, 2) == 1 {
@@ -84,6 +84,7 @@ impl MapBuilder {
                 self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
             }
         }
+        assert_eq!(max_tunnels, self.tunnels.len());
         BuildCommandResult::Finished
     }
 
