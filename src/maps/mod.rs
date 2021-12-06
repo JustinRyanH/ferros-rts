@@ -76,30 +76,16 @@ impl MapBuilder {
             return BuildCommandResult::Finished;
         }
 
-        if self.tunnels.len() == 0 {
-            let prev = self.rooms[0].center();
-            let new = self.rooms[1].center();
+        let connecting_room_index = (self.tunnels.len() / 2) + 1;
+        let prev = self.rooms[connecting_room_index - 1].center();
+        let new = self.rooms[connecting_room_index].center();
 
-            if rng.range(0, 2) == 1 {
-                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
-                self.tunnels.push(Tunnel::vertical(prev.y, new.y, new.x));
-            } else {
-                self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
-                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
-            }
+        if rng.range(0, 2) == 1 {
+            self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
+            self.tunnels.push(Tunnel::vertical(prev.y, new.y, new.x));
         } else {
-            let i = (self.tunnels.len() / 2) + 1;
-
-            let prev = self.rooms[i - 1].center();
-            let new = self.rooms[i].center();
-
-            if rng.range(0, 2) == 1 {
-                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
-                self.tunnels.push(Tunnel::vertical(prev.y, new.y, new.x));
-            } else {
-                self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
-                self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
-            }
+            self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
+            self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
         }
         BuildCommandResult::NotFinished
     }
