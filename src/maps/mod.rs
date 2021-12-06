@@ -11,6 +11,7 @@ pub struct MapResult {
 pub enum BuildCommandResult {
     NotFinished,
     Finished,
+    StepsLeft(usize),
 }
 
 pub struct MapBuilder {
@@ -52,7 +53,8 @@ impl MapBuilder {
         max_room_size: i32,
         rng: &mut RandomNumberGenerator,
     ) -> BuildCommandResult {
-        if self.rooms.len() >= num_of_rooms as usize {
+        let num_of_rooms = num_of_rooms as usize;
+        if self.rooms.len() >= num_of_rooms {
             self.rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
             return BuildCommandResult::Finished;
         }
@@ -67,7 +69,7 @@ impl MapBuilder {
         if !self.rooms.iter().any(|r| r.intersect(&room)) {
             self.rooms.push(room);
         }
-        BuildCommandResult::NotFinished
+        BuildCommandResult::StepsLeft(num_of_rooms - self.rooms.len())
     }
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
