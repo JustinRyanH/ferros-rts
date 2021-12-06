@@ -71,7 +71,7 @@ impl GeneraotrRunner {
 
     pub fn render_menu(&self, draw: &mut DrawBatch) {
         let margin = 5;
-        let menu_width = 20;
+        let menu_width = 25;
         let x = SCREEN_WIDTH - (menu_width + margin);
         let h = 7 + self.commands.len() as i32;
         let modal = Rect::with_size(x, margin, menu_width, h);
@@ -108,6 +108,14 @@ impl GeneraotrRunner {
                 std::cmp::Ordering::Greater => builder.append("[ ]"),
             };
             builder.append(" ").append(command.generator_text());
+
+            match command {
+                GeneratorCommand::Tunnel | GeneratorCommand::GenerateRooms { .. } => {
+                    builder.append(" [").append("   ").append("]");
+                }
+                _ => {}
+            }
+
             builder.ln();
         }
     }
