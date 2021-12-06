@@ -111,7 +111,22 @@ impl GeneraotrRunner {
 
             match command {
                 GeneratorCommand::Tunnel | GeneratorCommand::GenerateRooms { .. } => {
-                    builder.append(" [").append("   ").append("]");
+                    match self.run_index.cmp(&i) {
+                        std::cmp::Ordering::Less => {
+                            builder.append(" [").append("   ").append("]");
+                        }
+                        std::cmp::Ordering::Equal => {
+                            builder
+                                .append(" [")
+                                .fg(YELLOW)
+                                .append("XXX")
+                                .fg(WHITE)
+                                .append("]");
+                        }
+                        std::cmp::Ordering::Greater => {
+                            builder.append(" [").append("XXX").append("]");
+                        }
+                    }
                 }
                 _ => {}
             }
