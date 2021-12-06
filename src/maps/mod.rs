@@ -72,6 +72,10 @@ impl MapBuilder {
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
         let max_tunnels = self.rooms.len() * 2 - 2;
+        if self.tunnels.len() >= max_tunnels {
+            return BuildCommandResult::Finished;
+        }
+
         for (i, room) in self.rooms.iter().enumerate().skip(1) {
             let prev = self.rooms[i - 1].center();
             let new = room.center();
@@ -85,7 +89,7 @@ impl MapBuilder {
             }
         }
         assert_eq!(max_tunnels, self.tunnels.len());
-        BuildCommandResult::Finished
+        BuildCommandResult::NotFinished
     }
 
     pub fn build_map(&mut self) -> MapResult {
