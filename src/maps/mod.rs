@@ -11,7 +11,7 @@ pub struct MapResult {
 pub enum BuildCommandResult {
     NotFinished,
     Finished,
-    StepsLeft(usize),
+    Progress { total: usize, current: usize },
 }
 
 pub struct MapBuilder {
@@ -69,7 +69,10 @@ impl MapBuilder {
         if !self.rooms.iter().any(|r| r.intersect(&room)) {
             self.rooms.push(room);
         }
-        BuildCommandResult::StepsLeft(num_of_rooms - self.rooms.len())
+        BuildCommandResult::Progress {
+            total: num_of_rooms,
+            current: self.rooms.len(),
+        }
     }
 
     pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
@@ -89,7 +92,10 @@ impl MapBuilder {
             self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
             self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
         }
-        BuildCommandResult::NotFinished
+        BuildCommandResult::Progress {
+            total: max_tunnels,
+            current: self.tunnels.len(),
+        }
     }
 
     pub fn build_map(&mut self) -> MapResult {
