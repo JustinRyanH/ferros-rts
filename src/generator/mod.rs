@@ -3,7 +3,7 @@ mod tunnel;
 use bracket_lib::prelude::*;
 pub use tunnel::*;
 
-use crate::prelude::{BuildCommandResult, MapBuilder, TileType, SCREEN_WIDTH};
+use crate::prelude::{BuildCommandResult, MapBuilder, Progress, TileType, SCREEN_WIDTH};
 
 #[derive(Debug, Clone, Copy)]
 pub enum GeneratorCommand {
@@ -45,6 +45,7 @@ impl GeneratorCommand {
 
 pub struct GeneraotrRunner {
     pub commands: Vec<GeneratorCommand>,
+    pub progress: Option<Progress>,
     pub run_index: usize,
 }
 
@@ -53,6 +54,7 @@ impl GeneraotrRunner {
         Self {
             commands,
             run_index: 0,
+            progress: None,
         }
     }
 
@@ -64,7 +66,9 @@ impl GeneraotrRunner {
         if self.is_finished() {
             return;
         }
-        if let BuildCommandResult::Finished = self.commands[self.run_index].perform(builder, rng) {
+        let perform = self.commands[self.run_index].perform(builder, rng);
+        self.progress = perform.into();
+        if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
     }
@@ -116,12 +120,14 @@ impl GeneraotrRunner {
                             builder.append(" [").append("   ").append("]");
                         }
                         std::cmp::Ordering::Equal => {
-                            builder
-                                .append(" [")
-                                .fg(YELLOW)
-                                .append("XXX")
-                                .fg(WHITE)
-                                .append("]");
+                            builder.append(" [").fg(YELLOW);
+                            match self.progress {
+                                Some(progress) => progress.render(builder),
+                                None => {
+                                    builder.append("   ");
+                                }
+                            };
+                            builder.fg(WHITE).append("]");
                         }
                         std::cmp::Ordering::Greater => {
                             builder.append(" [").append("XXX").append("]");

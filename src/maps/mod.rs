@@ -8,8 +8,37 @@ pub struct MapResult {
     pub player: Option<Player>,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct Progress {
+    pub total: usize,
+    pub current: usize,
+}
+
+impl Progress {
+    pub fn render(self, builder: &mut TextBuilder) {
+        let current = self.current as f32 / self.total as f32 * 10.0 / 3.0;
+        let current = current.floor() as i32;
+        (1..=3).for_each(|i| {
+            if i < current {
+                builder.append("X");
+            } else {
+                builder.append(" ");
+            }
+        });
+    }
+}
+
+impl From<BuildCommandResult> for Option<Progress> {
+    fn from(val: BuildCommandResult) -> Self {
+        match val {
+            BuildCommandResult::Progress { total, current } => Some(Progress { total, current }),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
 pub enum BuildCommandResult {
-    NotFinished,
     Finished,
     Progress { total: usize, current: usize },
 }
