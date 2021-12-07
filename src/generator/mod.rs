@@ -3,7 +3,10 @@ mod tunnel;
 use bracket_lib::prelude::*;
 pub use tunnel::*;
 
-use crate::prelude::{BuildCommandResult, MapBuilder, Progress, TileType};
+use crate::{
+    prelude::{BuildCommandResult, MapBuilder, Progress, TileType, SCREEN_HEIGHT},
+    progress::RenderProgress,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub enum GeneratorCommand {
@@ -131,8 +134,11 @@ impl GeneraotrRunner {
     pub fn get_render_text(&self) -> Option<&'static str> {
         self.get_current_command().map(|cmd| cmd.generator_text())
     }
+}
 
-    pub fn render_progress_bar(&self, y: i32, draw: &mut DrawBatch) {
+impl RenderProgress for GeneraotrRunner {
+    fn render_progress(&self, draw: &mut DrawBatch) {
+        let y = SCREEN_HEIGHT - 5;
         let pos = Rect::with_size(4, y, 71, 2);
 
         draw.draw_double_box(pos, ColorPair::new(YELLOW, BLACK));

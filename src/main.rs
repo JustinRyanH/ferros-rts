@@ -1,6 +1,7 @@
 mod generator;
 mod maps;
 mod player;
+mod progress;
 mod states;
 mod tools;
 
@@ -12,6 +13,7 @@ mod prelude {
     pub use crate::generator::*;
     pub use crate::maps::*;
     pub use crate::player::*;
+    pub use crate::progress::*;
     pub use crate::states::*;
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;

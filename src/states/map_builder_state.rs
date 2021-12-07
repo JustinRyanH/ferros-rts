@@ -58,7 +58,7 @@ impl GameState for MapBuilderState {
             self.builder.render(&mut draw);
         }
 
-        self.generator.render_progress_bar(45, &mut draw);
+        self.generator.render_progress(&mut draw);
         Self::submit_batch(ctx, &mut draw).unwrap();
         if self.generator.is_finished() {
             self.render_map = Some(());
