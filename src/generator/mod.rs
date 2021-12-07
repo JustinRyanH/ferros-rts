@@ -117,10 +117,10 @@ impl GeneraotrRunner {
                 GeneratorCommand::Tunnel | GeneratorCommand::GenerateRooms { .. } => {
                     match self.run_index.cmp(&i) {
                         std::cmp::Ordering::Less => {
-                            builder.append(" [").append("   ").append("]");
+                            builder.append("[").append("   ").append("]");
                         }
                         std::cmp::Ordering::Equal => {
-                            builder.append(" [").fg(YELLOW);
+                            builder.append("[").fg(YELLOW);
                             match self.progress {
                                 Some(progress) => progress.render(builder),
                                 None => {
@@ -130,7 +130,7 @@ impl GeneraotrRunner {
                             builder.fg(WHITE).append("]");
                         }
                         std::cmp::Ordering::Greater => {
-                            builder.append(" [").append("XXX").append("]");
+                            builder.append("[").append("XXX").append("]");
                         }
                     }
                 }

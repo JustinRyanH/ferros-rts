@@ -19,10 +19,10 @@ impl Progress {
         let current = self.current as f32 / self.total as f32 * 10.0 / 3.0;
         let current = current.floor() as i32;
         (1..=3).for_each(|i| {
-            if i < current {
-                builder.append("X");
-            } else {
+            if i >= current {
                 builder.append(" ");
+            } else {
+                builder.append("X");
             }
         });
     }
