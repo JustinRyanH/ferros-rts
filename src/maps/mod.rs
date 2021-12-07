@@ -104,8 +104,12 @@ impl MapBuilder {
         }
     }
 
-    pub fn build_tunnels(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
-        let max_tunnels = self.rooms.len() * 2 - 2;
+    pub fn build_tunnels(
+        &mut self,
+        max_tunnels: i32,
+        rng: &mut RandomNumberGenerator,
+    ) -> BuildCommandResult {
+        let max_tunnels = max_tunnels as usize;
         if self.tunnels.len() >= max_tunnels {
             return BuildCommandResult::Finished;
         }

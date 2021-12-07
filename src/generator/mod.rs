@@ -40,7 +40,9 @@ impl GeneratorCommand {
                 max_room_size,
             } => builder.build_room(*num_of_rooms, *max_room_size, rng),
             GeneratorCommand::PlacePlayerInRoom => builder.place_player(rng),
-            GeneratorCommand::Tunnel { .. } => builder.build_tunnels(rng),
+            GeneratorCommand::Tunnel { num_of_tunnels } => {
+                builder.build_tunnels(*num_of_tunnels, rng)
+            }
         }
     }
 }
