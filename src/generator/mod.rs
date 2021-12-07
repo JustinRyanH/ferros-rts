@@ -85,14 +85,13 @@ impl GeneraotrRunner {
         self.commands[0..=self.run_index].iter().enumerate().fold(
             0,
             |stuff, (index, cmd)| match cmd {
-                GeneratorCommand::FillMap(_) => stuff + 1,
                 GeneratorCommand::GenerateRooms { num_of_rooms, .. } => {
-                    self.load_progress(index, stuff, num_of_rooms)
+                    self.get_subsystem_current_progress(index, stuff, num_of_rooms)
                 }
-                GeneratorCommand::PlacePlayerInRoom => stuff + 1,
                 GeneratorCommand::Tunnel { num_of_tunnels } => {
-                    self.load_progress(index, stuff, num_of_tunnels)
+                    self.get_subsystem_current_progress(index, stuff, num_of_tunnels)
                 }
+                _ => stuff + 1,
             },
         )
     }
@@ -101,7 +100,7 @@ impl GeneraotrRunner {
         self.system_progress.total as i32
     }
 
-    fn load_progress(&self, index: usize, stuff: i32, total: &i32) -> i32 {
+    fn get_subsystem_current_progress(&self, index: usize, stuff: i32, total: &i32) -> i32 {
         if index == self.run_index {
             stuff + self.get_progress()
         } else {
@@ -119,10 +118,12 @@ impl GeneraotrRunner {
 
     pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
         if self.is_finished() {
+            println!("{:?}", self.progress_num());
             return;
         }
         let perform = self.commands[self.run_index].perform(builder, rng);
         self.sub_system_progress = perform.into();
+        self.system_progress.current += 1;
         if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
