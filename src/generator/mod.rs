@@ -3,10 +3,7 @@ mod tunnel;
 use bracket_lib::prelude::*;
 pub use tunnel::*;
 
-use crate::{
-    prelude::{BuildCommandResult, MapBuilder, Progress, TileType, SCREEN_HEIGHT},
-    progress::RenderProgress,
-};
+use crate::prelude::*;
 
 #[derive(Debug, Clone, Copy)]
 pub enum GeneratorCommand {
@@ -46,6 +43,15 @@ impl GeneratorCommand {
             GeneratorCommand::Tunnel { num_of_tunnels } => {
                 builder.build_tunnels(*num_of_tunnels, rng)
             }
+        }
+    }
+
+    pub fn steps(&self) -> usize {
+        match self {
+            GeneratorCommand::FillMap(_) => 1,
+            GeneratorCommand::GenerateRooms { num_of_rooms, .. } => *num_of_rooms as usize,
+            GeneratorCommand::PlacePlayerInRoom => 1,
+            GeneratorCommand::Tunnel { num_of_tunnels } => *num_of_tunnels as usize,
         }
     }
 }
@@ -89,12 +95,7 @@ impl GeneraotrRunner {
     }
 
     fn max_progress_num(&self) -> i32 {
-        self.commands.iter().fold(0, |max, cmd| match cmd {
-            GeneratorCommand::FillMap(_) => max + 1,
-            GeneratorCommand::GenerateRooms { max_room_size, .. } => max + max_room_size,
-            GeneratorCommand::PlacePlayerInRoom => max + 1,
-            GeneratorCommand::Tunnel { num_of_tunnels } => max + num_of_tunnels,
-        })
+        self.commands.iter().fold(0, |max, cmd| cmd.steps() + max) as i32
     }
 
     fn load_progress(&self, index: usize, stuff: i32, total: &i32) -> i32 {
