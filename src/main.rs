@@ -27,8 +27,6 @@ pub struct MapBuilderState {
 }
 
 impl MapBuilderState {
-    // pub fn render_map(&self, batch: &mut DrawBatch) {}
-
     fn clear_batch(draw: &mut DrawBatch) {
         draw.target(0);
         draw.cls();
