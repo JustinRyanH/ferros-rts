@@ -3,6 +3,7 @@ mod maps;
 mod player;
 mod tools;
 
+const BUILD_BUDGET: std::time::Duration = std::time::Duration::from_micros(1);
 mod prelude {
     pub const SCREEN_WIDTH: i32 = 80;
     pub const SCREEN_HEIGHT: i32 = 50;
@@ -22,6 +23,7 @@ pub struct MapBuilderState {
     rng: RandomNumberGenerator,
     render_map: Option<()>,
     show_menu: bool,
+    building: bool,
 }
 
 impl MapBuilderState {
@@ -38,6 +40,16 @@ impl MapBuilderState {
         draw.submit(0)?;
         render_draw_buffer(ctx)
     }
+
+    fn build_world(&mut self) {
+        if !self.building {
+            return;
+        }
+        let start = std::time::Instant::now();
+        while (std::time::Instant::now() - start) < BUILD_BUDGET {
+            self.generator.next(&mut self.builder, &mut self.rng);
+        }
+    }
 }
 
 impl GameState for MapBuilderState {
@@ -48,7 +60,7 @@ impl GameState for MapBuilderState {
         if let Some(code) = ctx.key {
             match code {
                 VirtualKeyCode::Space => {
-                    self.generator.next(&mut self.builder, &mut self.rng);
+                    self.building = !self.building;
                 }
                 VirtualKeyCode::Grave => {
                     self.show_menu = !self.show_menu;
@@ -56,6 +68,8 @@ impl GameState for MapBuilderState {
                 _ => {}
             }
         }
+
+        self.build_world();
 
         draw.target(0);
         if let Some(()) = self.render_map {
@@ -95,6 +109,7 @@ impl Default for MapBuilderState {
             generator,
             render_map: None,
             show_menu: true,
+            building: false,
         }
     }
 }
