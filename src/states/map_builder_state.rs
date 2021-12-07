@@ -1,6 +1,7 @@
 pub const BUILD_BUDGET: std::time::Duration = std::time::Duration::from_micros(1);
 
 use crate::prelude::*;
+
 pub struct MapBuilderState {
     generator: GeneraotrRunner,
     builder: MapBuilder,

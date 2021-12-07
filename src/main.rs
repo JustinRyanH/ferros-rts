@@ -18,6 +18,37 @@ mod prelude {
 }
 use crate::prelude::*;
 
+#[derive(Debug)]
+enum State {
+    WorldGen,
+    Playing,
+}
+
+struct Game {
+    state: State,
+    world_gen: MapBuilderState,
+}
+
+impl Game {
+    fn new() -> Self {
+        Self {
+            state: State::WorldGen,
+            world_gen: MapBuilderState::default(),
+        }
+    }
+}
+
+impl GameState for Game {
+    fn tick(&mut self, ctx: &mut BTerm) {
+        match self.state {
+            State::WorldGen => {
+                self.world_gen.tick(ctx);
+            }
+            State::Playing => todo!(),
+        }
+    }
+}
+
 fn main() -> BError {
     let mut context = BTermBuilder::simple80x50()
         .with_title("Ferros RTS")
@@ -29,5 +60,5 @@ fn main() -> BError {
 
     context.with_post_scanlines(true);
 
-    main_loop(context, MapBuilderState::default())
+    main_loop(context, Game::new())
 }
