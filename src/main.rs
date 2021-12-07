@@ -85,6 +85,7 @@ impl GameState for MapBuilderState {
             }
         }
 
+        self.generator.render_progress_bar(&mut draw);
         Self::submit_batch(ctx, &mut draw).unwrap();
         if self.generator.is_finished() {
             self.render_map = Some(());
@@ -94,13 +95,16 @@ impl GameState for MapBuilderState {
 
 impl Default for MapBuilderState {
     fn default() -> Self {
+        let num_of_rooms = 10;
         let generator = GeneraotrRunner::new(vec![
             GeneratorCommand::FillMap(TileType::Wall),
             GeneratorCommand::GenerateRooms {
-                num_of_rooms: 10,
+                num_of_rooms,
                 max_room_size: 10,
             },
-            GeneratorCommand::Tunnel,
+            GeneratorCommand::Tunnel {
+                num_of_tunnels: (num_of_rooms * 2) - 2,
+            },
             GeneratorCommand::PlacePlayerInRoom,
         ]);
         Self {
