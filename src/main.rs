@@ -21,7 +21,6 @@ use crate::prelude::*;
 #[derive(Debug)]
 enum State {
     WorldGen,
-    Playing,
 }
 
 struct Game {
@@ -44,7 +43,6 @@ impl GameState for Game {
             State::WorldGen => {
                 self.world_gen.tick(ctx);
             }
-            State::Playing => todo!(),
         }
     }
 }

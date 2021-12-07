@@ -7,7 +7,6 @@ pub struct MapBuilderState {
     builder: MapBuilder,
     rng: RandomNumberGenerator,
     render_map: Option<()>,
-    show_menu: bool,
     building: bool,
 }
 
@@ -41,14 +40,8 @@ impl GameState for MapBuilderState {
         Self::clear_batch(&mut draw);
 
         if let Some(code) = ctx.key {
-            match code {
-                VirtualKeyCode::Space => {
-                    self.building = !self.building;
-                }
-                VirtualKeyCode::Grave => {
-                    self.show_menu = !self.show_menu;
-                }
-                _ => {}
+            if code == VirtualKeyCode::Space {
+                self.building = !self.building;
             }
         }
 
@@ -63,12 +56,9 @@ impl GameState for MapBuilderState {
             }
         } else {
             self.builder.render(&mut draw);
-            if !self.generator.is_finished() && self.show_menu {
-                self.generator.render_menu(&mut draw);
-            }
         }
 
-        self.generator.render_progress_bar(&mut draw);
+        self.generator.render_progress_bar(45, &mut draw);
         Self::submit_batch(ctx, &mut draw).unwrap();
         if self.generator.is_finished() {
             self.render_map = Some(());
@@ -95,7 +85,6 @@ impl Default for MapBuilderState {
             rng: RandomNumberGenerator::new(),
             generator,
             render_map: None,
-            show_menu: true,
             building: false,
         }
     }
