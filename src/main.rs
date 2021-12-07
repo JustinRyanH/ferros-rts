@@ -80,7 +80,7 @@ impl GameState for MapBuilderState {
             }
         } else {
             self.builder.render(&mut draw);
-            if self.show_menu {
+            if !self.generator.is_finished() && self.show_menu {
                 self.generator.render_menu(&mut draw);
             }
         }
