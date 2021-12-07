@@ -58,15 +58,18 @@ impl GeneratorCommand {
 
 pub struct GeneraotrRunner {
     pub commands: Vec<GeneratorCommand>,
+    pub system_progress: Progress,
     pub sub_system_progress: Option<Progress>,
     pub run_index: usize,
 }
 
 impl GeneraotrRunner {
     pub fn new(commands: Vec<GeneratorCommand>) -> Self {
+        let total = commands.iter().fold(0, |total, cmd| cmd.steps() + total);
         Self {
             commands,
             run_index: 0,
+            system_progress: Progress { total, current: 0 },
             sub_system_progress: None,
         }
     }
