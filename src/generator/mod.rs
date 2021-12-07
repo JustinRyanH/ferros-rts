@@ -98,7 +98,7 @@ impl GeneraotrRunner {
     }
 
     fn max_progress_num(&self) -> i32 {
-        self.commands.iter().fold(0, |max, cmd| cmd.steps() + max) as i32
+        self.system_progress.total as i32
     }
 
     fn load_progress(&self, index: usize, stuff: i32, total: &i32) -> i32 {
