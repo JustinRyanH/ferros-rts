@@ -52,7 +52,7 @@ impl GeneratorCommand {
 
 pub struct GeneraotrRunner {
     pub commands: Vec<GeneratorCommand>,
-    pub progress: Option<Progress>,
+    pub sub_system_progress: Option<Progress>,
     pub run_index: usize,
 }
 
@@ -61,7 +61,7 @@ impl GeneraotrRunner {
         Self {
             commands,
             run_index: 0,
-            progress: None,
+            sub_system_progress: None,
         }
     }
 
@@ -106,7 +106,7 @@ impl GeneraotrRunner {
     }
 
     fn get_progress(&self) -> i32 {
-        if let Some(Progress { current, .. }) = self.progress {
+        if let Some(Progress { current, .. }) = self.sub_system_progress {
             current as i32
         } else {
             0
@@ -118,7 +118,7 @@ impl GeneraotrRunner {
             return;
         }
         let perform = self.commands[self.run_index].perform(builder, rng);
-        self.progress = perform.into();
+        self.sub_system_progress = perform.into();
         if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
