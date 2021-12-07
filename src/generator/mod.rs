@@ -86,10 +86,10 @@ impl GeneraotrRunner {
             0,
             |stuff, (index, cmd)| match cmd {
                 GeneratorCommand::GenerateRooms { num_of_rooms, .. } => {
-                    self.get_subsystem_current_progress(index, stuff, num_of_rooms)
+                    stuff + self.get_subsystem_current_progress(index, num_of_rooms)
                 }
                 GeneratorCommand::Tunnel { num_of_tunnels } => {
-                    self.get_subsystem_current_progress(index, stuff, num_of_tunnels)
+                    stuff + self.get_subsystem_current_progress(index, num_of_tunnels)
                 }
                 _ => stuff + 1,
             },
@@ -100,11 +100,11 @@ impl GeneraotrRunner {
         self.system_progress.total as i32
     }
 
-    fn get_subsystem_current_progress(&self, index: usize, stuff: i32, total: &i32) -> i32 {
+    fn get_subsystem_current_progress(&self, index: usize, total: &i32) -> i32 {
         if index == self.run_index {
-            stuff + self.get_progress()
+            self.get_progress()
         } else {
-            stuff + total
+            *total
         }
     }
 
