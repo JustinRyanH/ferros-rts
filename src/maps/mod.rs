@@ -15,16 +15,8 @@ pub struct Progress {
 }
 
 impl Progress {
-    pub fn render(self, builder: &mut TextBuilder) {
-        let current = self.current as f32 / self.total as f32 * 10.0 / 3.0;
-        let current = current.floor() as i32;
-        (1..=3).for_each(|i| {
-            if i >= current {
-                builder.append(" ");
-            } else {
-                builder.append("X");
-            }
-        });
+    pub fn is_finished(&self) -> bool {
+        self.current >= self.total
     }
 }
 

@@ -75,7 +75,7 @@ impl GeneraotrRunner {
     }
 
     pub fn is_finished(&self) -> bool {
-        self.run_index >= self.commands.len()
+        self.system_progress.is_finished()
     }
 
     fn progress_num(&self) -> i32 {
@@ -107,7 +107,7 @@ impl GeneraotrRunner {
 
     pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
         self.update_progress();
-        if self.is_finished() {
+        if self.run_index >= self.commands.len() {
             return;
         }
         let perform = self.commands[self.run_index].perform(builder, rng);

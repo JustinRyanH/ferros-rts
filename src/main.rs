@@ -18,33 +18,58 @@ mod prelude {
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
 }
+use std::fs::OpenOptions;
+
 use crate::prelude::*;
 
-#[derive(Debug)]
-enum State {
-    WorldGen,
+struct CurrentWorld {
+    player: Player,
+    map: Map,
+}
+
+impl CurrentWorld {
+    fn new(player: Player, map: Map) -> Self {
+        Self { player, map }
+    }
+}
+
+impl GameState for CurrentWorld {
+    fn tick(&mut self, ctx: &mut BTerm) {
+        let mut draw = DrawBatch::new();
+        clear_batch(&mut draw);
+
+        draw.target(0);
+        self.map.render(&mut draw);
+        self.player.render(&mut draw);
+        submit_batch(ctx, &mut draw).unwrap();
+    }
 }
 
 struct Game {
-    state: State,
     world_gen: MapBuilderState,
+    world: Option<CurrentWorld>,
 }
 
 impl Game {
     fn new() -> Self {
         Self {
-            state: State::WorldGen,
             world_gen: MapBuilderState::default(),
+            world: None,
         }
     }
 }
 
 impl GameState for Game {
     fn tick(&mut self, ctx: &mut BTerm) {
-        match self.state {
-            State::WorldGen => {
-                self.world_gen.tick(ctx);
+        if let Some(world) = &mut self.world {
+            world.tick(ctx)
+        } else {
+            if self.world_gen.generator.is_finished() {
+                let MapResult { map, player } = self.world_gen.builder.build_map();
+                let player = player.expect("The player was not placed in the world");
+                self.world = Some(CurrentWorld::new(player, map));
             }
+            self.world_gen.tick(ctx);
         }
     }
 }
