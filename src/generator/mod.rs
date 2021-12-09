@@ -132,6 +132,7 @@ impl GeneraotrRunner {
 
 impl RenderProgress for GeneraotrRunner {
     fn render_progress(&self, draw: &mut DrawBatch) {
+        let progress = self.system_progress;
         let y = SCREEN_HEIGHT - 5;
         let pos = Rect::with_size(4, y, 71, 2);
 
@@ -143,9 +144,23 @@ impl RenderProgress for GeneraotrRunner {
         draw.bar_horizontal(
             Point::new(pos.x1 + 1, y + 1),
             70,
-            self.system_progress.current,
-            self.system_progress.total,
+            progress.current,
+            progress.total,
             ColorPair::new(WHITE, BLACK),
         );
+
+        if let Some(progress) = self.sub_system_progress {
+            let y = SCREEN_HEIGHT - 9;
+            let pos = Rect::with_size(4, y, 71, 2);
+
+            draw.draw_double_box(pos, ColorPair::new(YELLOW, BLACK));
+            draw.bar_horizontal(
+                Point::new(pos.x1 + 1, y + 1),
+                70,
+                progress.current,
+                progress.total,
+                ColorPair::new(WHITE, BLACK),
+            );
+        }
     }
 }

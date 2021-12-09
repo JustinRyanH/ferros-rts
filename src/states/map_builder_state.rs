@@ -1,4 +1,4 @@
-pub const BUILD_BUDGET: std::time::Duration = std::time::Duration::from_micros(1);
+// pub const BUILD_BUDGET: std::time::Duration = std::time::Duration::from_micros(1);
 
 use crate::prelude::*;
 
@@ -27,10 +27,11 @@ impl MapBuilderState {
         if !self.building {
             return;
         }
-        let start = std::time::Instant::now();
-        while (std::time::Instant::now() - start) < BUILD_BUDGET {
-            self.generator.next(&mut self.builder, &mut self.rng);
-        }
+        // TODO(jhurstwright): Actually do budget thing for more complex builds
+        // let start = std::time::Instant::now();
+        // while (std::time::Instant::now() - start) < BUILD_BUDGET {
+        self.generator.next(&mut self.builder, &mut self.rng);
+        // }
     }
 }
 
