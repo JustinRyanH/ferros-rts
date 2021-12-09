@@ -82,18 +82,9 @@ impl GeneraotrRunner {
         if self.run_index >= self.commands.len() {
             return self.max_progress_num();
         }
-        self.commands[0..=self.run_index].iter().enumerate().fold(
-            0,
-            |stuff, (index, cmd)| match cmd {
-                GeneratorCommand::GenerateRooms { .. } => {
-                    stuff + self.get_subsystem_current_progress(index)
-                }
-                GeneratorCommand::Tunnel { .. } => {
-                    stuff + self.get_subsystem_current_progress(index)
-                }
-                _ => stuff + 1,
-            },
-        )
+        (0..=self.run_index).fold(0, |current, index| {
+            current + self.get_subsystem_current_progress(index)
+        })
     }
 
     fn max_progress_num(&self) -> i32 {
@@ -101,29 +92,27 @@ impl GeneraotrRunner {
     }
 
     fn get_subsystem_current_progress(&self, index: usize) -> i32 {
-        if index == self.run_index {
-            self.get_progress()
-        } else {
-            self.commands[index].steps() as i32
+        if index != self.run_index {
+            return self.commands[index].steps() as i32;
+        }
+        match self.sub_system_progress {
+            Some(Progress { current, .. }) => current as i32,
+            None => 0,
         }
     }
 
-    fn get_progress(&self) -> i32 {
-        if let Some(Progress { current, .. }) = self.sub_system_progress {
-            current as i32
-        } else {
-            0
-        }
+    pub fn update_progress(&mut self) {
+        self.system_progress.current = self.progress_num() as usize;
     }
 
     pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
+        self.update_progress();
         if self.is_finished() {
-            println!("{:?}", self.progress_num());
             return;
         }
         let perform = self.commands[self.run_index].perform(builder, rng);
         self.sub_system_progress = perform.into();
-        self.system_progress.current += 1;
+        self.system_progress.current = self.progress_num() as usize;
         if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
@@ -154,8 +143,8 @@ impl RenderProgress for GeneraotrRunner {
         draw.bar_horizontal(
             Point::new(pos.x1 + 1, y + 1),
             70,
-            self.progress_num(),
-            self.max_progress_num(),
+            self.system_progress.current,
+            self.system_progress.total,
             ColorPair::new(WHITE, BLACK),
         );
     }
