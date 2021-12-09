@@ -31,6 +31,21 @@ impl CurrentWorld {
     fn new(player: Player, map: Map) -> Self {
         Self { player, map }
     }
+
+    fn update(&mut self, ctx: &mut BTerm) {
+        if let Some(key) = ctx.key {
+            let delta = match key {
+                VirtualKeyCode::Left => Point::new(-1, 0),
+                VirtualKeyCode::Right => Point::new(1, 0),
+                VirtualKeyCode::Up => Point::new(0, -1),
+                VirtualKeyCode::Down => Point::new(0, 1),
+                _ => Point::new(0, 0),
+            };
+            if self.map.is_floor(self.player.new_position(delta)) {
+                self.player.move_position(delta);
+            }
+        }
+    }
 }
 
 impl GameState for CurrentWorld {
@@ -38,8 +53,11 @@ impl GameState for CurrentWorld {
         let mut draw = DrawBatch::new();
         clear_batch(&mut draw);
 
+        self.update(ctx);
+
         draw.target(0);
         self.map.render(&mut draw);
+        draw.target(1);
         self.player.render(&mut draw);
         submit_batch(ctx, &mut draw).unwrap();
     }

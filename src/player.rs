@@ -14,17 +14,12 @@ impl Player {
         }
     }
 
-    pub fn update(&mut self, ctx: &mut BTerm) {
-        if let Some(key) = ctx.key {
-            let delta = match key {
-                VirtualKeyCode::Left => Point::new(-1, 0),
-                VirtualKeyCode::Right => Point::new(1, 0),
-                VirtualKeyCode::Up => Point::new(0, -1),
-                VirtualKeyCode::Down => Point::new(0, 1),
-                _ => Point::new(0, 0),
-            };
-            self.position += delta;
-        }
+    pub fn new_position(&mut self, delta: Point) -> Point {
+        self.position + delta
+    }
+
+    pub fn move_position(&mut self, delta: Point) {
+        self.position += delta;
     }
 
     pub fn render(&self, draw: &mut DrawBatch) {

@@ -39,6 +39,10 @@ impl Map {
         })
     }
 
+    pub fn is_floor(&self, point: Point) -> bool {
+        matches!(self.get_tile(point), Some(TileType::Floor))
+    }
+
     pub fn render(&self, draw: &mut DrawBatch) {
         let fg = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
         let color = ColorPair::new(fg, BLACK);
@@ -51,6 +55,10 @@ impl Map {
                 }
             }
         }
+    }
+
+    pub fn get_tile(&self, Point { x, y }: Point) -> Option<TileType> {
+        self.idx(x, y).map(|idx| self.tiles[idx])
     }
 
     fn idx(&self, x: i32, y: i32) -> Option<usize> {
