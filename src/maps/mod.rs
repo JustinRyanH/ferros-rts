@@ -5,7 +5,7 @@ pub use map::*;
 
 pub struct MapResult {
     pub map: Map,
-    pub player: Option<Player>,
+    pub player: Option<Point>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -40,7 +40,7 @@ pub struct MapBuilder {
     pub height: i32,
     pub rooms: Vec<Rect>,
     pub tunnels: Vec<Tunnel>,
-    pub player: Option<Player>,
+    pub player: Option<Point>,
     pub fill_tile: Option<TileType>,
 }
 
@@ -64,7 +64,7 @@ impl MapBuilder {
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
         let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
-        self.player = Some(Player::new(room.x, room.y));
+        self.player = Some(Point::new(room.x, room.y));
         BuildCommandResult::Finished
     }
 
@@ -152,7 +152,7 @@ impl MapBuilder {
             tunnel.render(draw);
         }
         for player in self.player.iter() {
-            draw.set(player.position, player.color, to_cp437('@'));
+            draw.set(*player, ColorPair::new(GREEN, BLACK), to_cp437('@'));
         }
     }
 }
