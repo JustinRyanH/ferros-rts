@@ -18,8 +18,6 @@ mod prelude {
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
 }
-use std::fs::OpenOptions;
-
 use crate::prelude::*;
 
 struct CurrentWorld {
