@@ -152,7 +152,7 @@ impl MapBuilder {
             tunnel.render(draw);
         }
         for player in self.player.iter() {
-            player.render(draw)
+            draw.set(player.position, player.color, to_cp437('@'));
         }
     }
 }

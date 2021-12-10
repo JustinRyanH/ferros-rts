@@ -26,24 +26,31 @@ use crate::prelude::*;
 struct CurrentWorld {
     player: Player,
     map: Map,
+    camera: Camera,
 }
 
 impl CurrentWorld {
     fn new(player: Player, map: Map) -> Self {
-        Self { player, map }
+        let camera = Camera::new(player.position);
+        Self {
+            player,
+            map,
+            camera,
+        }
     }
 
     fn update(&mut self, ctx: &mut BTerm) {
         if let Some(key) = ctx.key {
             let delta = match key {
-                VirtualKeyCode::Left => Point::new(-1, 0),
-                VirtualKeyCode::Right => Point::new(1, 0),
-                VirtualKeyCode::Up => Point::new(0, -1),
-                VirtualKeyCode::Down => Point::new(0, 1),
+                VirtualKeyCode::Left | VirtualKeyCode::H => Point::new(-1, 0),
+                VirtualKeyCode::Right | VirtualKeyCode::L => Point::new(1, 0),
+                VirtualKeyCode::Up | VirtualKeyCode::K => Point::new(0, -1),
+                VirtualKeyCode::Down | VirtualKeyCode::J => Point::new(0, 1),
                 _ => Point::new(0, 0),
             };
             if self.map.is_floor(self.player.new_position(delta)) {
                 self.player.move_position(delta);
+                self.camera.on_player_move(self.player.position);
             }
         }
     }
@@ -56,10 +63,8 @@ impl GameState for CurrentWorld {
 
         self.update(ctx);
 
-        draw.target(0);
-        self.map.render(&mut draw);
-        draw.target(1);
-        self.player.render(&mut draw);
+        self.map.render(&self.camera, &mut draw);
+        self.player.render(&self.camera, &mut draw);
         submit_batch(ctx, &mut draw).unwrap();
     }
 }
