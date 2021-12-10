@@ -17,6 +17,9 @@ mod prelude {
     pub use crate::states::*;
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
+    pub use legion::systems::CommandBuffer;
+    pub use legion::world::SubWorld;
+    pub use legion::*;
 }
 use crate::prelude::*;
 
