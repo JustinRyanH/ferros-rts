@@ -66,7 +66,7 @@ impl Map {
         if x < 0 || y < 0 {
             return None;
         }
-        if x > self.width || y > self.width {
+        if x >= self.width || y >= self.height {
             return None;
         }
         Some((y * self.width) as usize + x as usize)
