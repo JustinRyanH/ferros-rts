@@ -33,6 +33,7 @@ pub fn build_scheduler() -> Schedule {
         .add_system(systems::player_input_system())
         .add_system(systems::map_render_system())
         .add_system(systems::entity_render_system())
+        .add_system(systems::collisions_system())
         .build()
 }
 
