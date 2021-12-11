@@ -1,17 +1,5 @@
 use crate::prelude::*;
 
-pub fn clear_batch(draw: &mut DrawBatch) {
-    draw.target(0);
-    draw.cls();
-    draw.target(1);
-    draw.cls();
-}
-
-pub fn submit_batch(ctx: &mut BTerm, draw: &mut DrawBatch) -> BError {
-    draw.submit(0)?;
-    render_draw_buffer(ctx)
-}
-
 pub struct PointLine {
     pub max: i32,
     pub current: i32,

@@ -5,6 +5,7 @@ mod player;
 mod progress;
 mod spawner;
 mod states;
+mod systems;
 mod tools;
 
 mod prelude {
@@ -28,7 +29,10 @@ mod prelude {
 use crate::prelude::*;
 
 pub fn build_scheduler() -> Schedule {
-    Schedule::builder().build()
+    Schedule::builder()
+        .add_system(systems::player_input_system())
+        .add_system(systems::map_render_system())
+        .build()
 }
 
 struct Game {
@@ -62,15 +66,15 @@ impl Game {
 
 impl GameState for Game {
     fn tick(&mut self, ctx: &mut BTerm) {
-        let mut draw = DrawBatch::new();
-        clear_batch(&mut draw);
+        ctx.set_active_console(0);
+        ctx.cls();
+        ctx.set_active_console(1);
+        ctx.cls();
 
         self.resources.insert(ctx.key);
         self.systems.execute(&mut self.ecs, &mut self.resources);
 
-        // RENDER
-
-        submit_batch(ctx, &mut draw).unwrap();
+        render_draw_buffer(ctx).expect("Render Error");
     }
 }
 

@@ -18,6 +18,9 @@ impl Map {
             tiles,
         }
     }
+    pub fn can_enter_tile(&self, point: Point) -> bool {
+        self.is_floor(point)
+    }
 
     pub fn fill(&mut self, tile: TileType) {
         self.tiles.iter_mut().for_each(|t| *t = tile);
@@ -69,6 +72,6 @@ impl Map {
         if x >= self.width || y >= self.height {
             return None;
         }
-        Some((y * self.width) as usize + x as usize)
+        Some(((y * self.width) as usize) + x as usize)
     }
 }
