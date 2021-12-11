@@ -54,6 +54,15 @@ impl Game {
         let MapResult { map, player } = builder.builder.build_map();
         let player = player.expect("Failed to place player in worlds");
         spawn_player(&mut ecs, player);
+        builder
+            .builder
+            .rooms
+            .iter()
+            .filter(|room| room.center() != player)
+            .map(|r| r.center())
+            .for_each(|pos| {
+                spawn_monster(&mut ecs, &mut rng, pos);
+            });
         resources.insert(map);
         resources.insert(Camera::new(player));
 
