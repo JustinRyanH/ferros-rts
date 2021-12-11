@@ -171,3 +171,14 @@ impl From<TileType> for FontCharType {
         }
     }
 }
+
+impl From<TileType> for ColorPair {
+    fn from(val: TileType) -> Self {
+        let fg_light = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
+        let fg_mid = RGBA::from_f32(1.0, 1.0, 0.0, 0.75);
+        match val {
+            TileType::Floor => ColorPair::new(fg_light, BLACK),
+            TileType::Wall => ColorPair::new(fg_mid, BLACK),
+        }
+    }
+}

@@ -9,7 +9,7 @@ pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
             let point = Point { x, y };
             let offset = camera.top_left_corner();
             if let Some(tile) = map.get_tile(point) {
-                draw_batch.set(point - offset, ColorPair::new(WHITE, BLACK), tile);
+                draw_batch.set(point - offset, tile.into(), tile);
             }
         }
     }
