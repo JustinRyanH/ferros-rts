@@ -40,7 +40,7 @@ pub fn build_scheduler() -> Schedule {
 struct Game {
     ecs: World,
     resources: Resources,
-    systems: Schedule,
+    gameplay_systems: Schedule,
 }
 
 impl Game {
@@ -70,7 +70,7 @@ impl Game {
         Self {
             ecs,
             resources,
-            systems: build_scheduler(),
+            gameplay_systems: build_scheduler(),
         }
     }
 }
@@ -83,7 +83,10 @@ impl GameState for Game {
         ctx.cls();
 
         self.resources.insert(ctx.key);
-        self.systems.execute(&mut self.ecs, &mut self.resources);
+        if self.resources.get::<Camera>().is_some() && self.resources.get::<Map>().is_some() {
+            self.gameplay_systems
+                .execute(&mut self.ecs, &mut self.resources);
+        }
 
         render_draw_buffer(ctx).expect("Render Error");
     }
