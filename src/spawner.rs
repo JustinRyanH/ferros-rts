@@ -1,15 +1,19 @@
 use crate::prelude::*;
 
-pub fn spawn_player(ecs: &mut World, pos: Point) {
+pub fn spawn_player(commands: &mut CommandBuffer, pos: Point) {
     let render = Render {
         color: ColorPair::new(WHITE, BLACK),
         glyph: to_cp437('@'),
     };
-    ecs.push((Player, pos, render));
+    commands.push((Player, pos, render));
 }
 
-pub fn spawn_monster(ecs: &mut World, rng: &mut RandomNumberGenerator, pos: Point) -> Entity {
-    ecs.push((
+pub fn spawn_monster(
+    commands: &mut CommandBuffer,
+    rng: &mut RandomNumberGenerator,
+    pos: Point,
+) -> Entity {
+    commands.push((
         Enemy,
         pos,
         Render {

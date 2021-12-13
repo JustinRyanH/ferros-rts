@@ -28,6 +28,33 @@ mod prelude {
 }
 use crate::prelude::*;
 
+#[system]
+pub fn world_gen(
+    #[resource] rng: &mut WorldGenRng,
+    #[resource] generator: &mut GeneraotrRunner,
+    #[resource] builder: &mut MapBuilder,
+    commands: &mut CommandBuffer,
+) {
+    while !generator.is_finished() {
+        generator.next(builder, rng);
+    }
+    let MapResult { map, player } = builder.build_map();
+    let player = player.expect("Failed to place player in worlds");
+    spawn_player(commands, player);
+    builder
+        .rooms
+        .iter()
+        .filter(|room| room.center() != player)
+        .map(|r| r.center())
+        .for_each(|pos| {
+            spawn_monster(commands, rng, pos);
+        });
+    commands.exec_mut(move |_, resources| {
+        resources.insert(map.clone());
+        resources.insert(Camera::new(player));
+    });
+}
+
 pub fn build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::player_input_system())
@@ -37,10 +64,15 @@ pub fn build_scheduler() -> Schedule {
         .build()
 }
 
+pub fn build_build_scheduler() -> Schedule {
+    Schedule::builder().add_system(world_gen_system()).build()
+}
+
 struct Game {
     ecs: World,
     resources: Resources,
     gameplay_systems: Schedule,
+    build_systems: Schedule,
 }
 
 impl Game {
@@ -57,6 +89,7 @@ impl Game {
             ecs,
             resources,
             gameplay_systems: build_scheduler(),
+            build_systems: build_build_scheduler(),
         }
     }
 
@@ -65,38 +98,8 @@ impl Game {
             self.gameplay_systems
                 .execute(&mut self.ecs, &mut self.resources);
         } else {
-            let (map, player) = {
-                let mut rng = self
-                    .resources
-                    .get_mut::<WorldGenRng>()
-                    .expect("Expected a WorldGenRng");
-                let mut generator = self
-                    .resources
-                    .get_mut::<GeneraotrRunner>()
-                    .expect("No Generator Resource");
-                let mut builder = self
-                    .resources
-                    .get_mut::<MapBuilder>()
-                    .expect("No Generator Runner");
-
-                while !generator.is_finished() {
-                    generator.next(&mut builder, &mut rng);
-                }
-                let MapResult { map, player } = builder.build_map();
-                let player = player.expect("Failed to place player in worlds");
-                spawn_player(&mut self.ecs, player);
-                builder
-                    .rooms
-                    .iter()
-                    .filter(|room| room.center() != player)
-                    .map(|r| r.center())
-                    .for_each(|pos| {
-                        spawn_monster(&mut self.ecs, &mut rng, pos);
-                    });
-                (map, player)
-            };
-            self.resources.insert(map);
-            self.resources.insert(Camera::new(player));
+            self.build_systems
+                .execute(&mut self.ecs, &mut self.resources);
         }
     }
 }
