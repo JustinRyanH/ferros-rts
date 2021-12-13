@@ -45,27 +45,8 @@ struct Game {
 
 impl Game {
     fn new() -> Self {
-        let mut ecs = World::default();
-        let mut resources = Resources::default();
-        let mut rng = RandomNumberGenerator::new();
-        let mut builder = MapBuilderState::default();
-        while !builder.is_finished() {
-            builder.build_world(&mut rng);
-        }
-        let MapResult { map, player } = builder.builder.build_map();
-        let player = player.expect("Failed to place player in worlds");
-        spawn_player(&mut ecs, player);
-        builder
-            .builder
-            .rooms
-            .iter()
-            .filter(|room| room.center() != player)
-            .map(|r| r.center())
-            .for_each(|pos| {
-                spawn_monster(&mut ecs, &mut rng, pos);
-            });
-        resources.insert(map);
-        resources.insert(Camera::new(player));
+        let ecs = World::default();
+        let resources = Resources::default();
 
         Self {
             ecs,
@@ -86,6 +67,26 @@ impl GameState for Game {
         if self.resources.get::<Camera>().is_some() && self.resources.get::<Map>().is_some() {
             self.gameplay_systems
                 .execute(&mut self.ecs, &mut self.resources);
+        } else {
+            let mut rng = RandomNumberGenerator::new();
+            let mut builder = MapBuilderState::default();
+            while !builder.is_finished() {
+                builder.build_world(&mut rng);
+            }
+            let MapResult { map, player } = builder.builder.build_map();
+            let player = player.expect("Failed to place player in worlds");
+            spawn_player(&mut self.ecs, player);
+            builder
+                .builder
+                .rooms
+                .iter()
+                .filter(|room| room.center() != player)
+                .map(|r| r.center())
+                .for_each(|pos| {
+                    spawn_monster(&mut self.ecs, &mut rng, pos);
+                });
+            self.resources.insert(map);
+            self.resources.insert(Camera::new(player));
         }
 
         render_draw_buffer(ctx).expect("Render Error");
