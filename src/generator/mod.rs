@@ -164,3 +164,21 @@ impl RenderProgress for GeneraotrRunner {
         }
     }
 }
+
+impl Default for GeneraotrRunner {
+    fn default() -> Self {
+        let num_of_rooms = 10;
+        let commands = vec![
+            GeneratorCommand::FillMap(TileType::Wall),
+            GeneratorCommand::GenerateRooms {
+                num_of_rooms,
+                max_room_size: 10,
+            },
+            GeneratorCommand::Tunnel {
+                num_of_tunnels: (num_of_rooms * 2) - 2,
+            },
+            GeneratorCommand::PlacePlayerInRoom,
+        ];
+        Self::new(commands)
+    }
+}
