@@ -85,16 +85,8 @@ impl Game {
             gameplay_systems: build_scheduler(),
         }
     }
-}
 
-impl GameState for Game {
-    fn tick(&mut self, ctx: &mut BTerm) {
-        ctx.set_active_console(0);
-        ctx.cls();
-        ctx.set_active_console(1);
-        ctx.cls();
-
-        self.resources.insert(ctx.key);
+    fn tick_on_command(&mut self) {
         if self.resources.get::<Camera>().is_some() && self.resources.get::<Map>().is_some() {
             self.gameplay_systems
                 .execute(&mut self.ecs, &mut self.resources);
@@ -125,6 +117,18 @@ impl GameState for Game {
             self.resources.insert(map);
             self.resources.insert(Camera::new(player));
         }
+    }
+}
+
+impl GameState for Game {
+    fn tick(&mut self, ctx: &mut BTerm) {
+        ctx.set_active_console(0);
+        ctx.cls();
+        ctx.set_active_console(1);
+        ctx.cls();
+
+        self.resources.insert(ctx.key);
+        self.tick_on_command();
 
         render_draw_buffer(ctx).expect("Render Error");
     }
