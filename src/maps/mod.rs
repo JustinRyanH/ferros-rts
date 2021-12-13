@@ -45,12 +45,12 @@ pub struct MapBuilder {
 }
 
 impl MapBuilder {
-    pub fn new(width: i32, height: i32, number_of_rooms: usize) -> Self {
+    pub fn new(width: i32, height: i32) -> Self {
         Self {
             width,
             height,
-            rooms: Vec::with_capacity(number_of_rooms),
-            tunnels: Vec::with_capacity(number_of_rooms * 2),
+            rooms: Vec::with_capacity(100),
+            tunnels: Vec::with_capacity(200),
             player: None,
             fill_tile: None,
         }

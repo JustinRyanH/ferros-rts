@@ -20,7 +20,7 @@ impl MapBuilderState {
 impl Default for MapBuilderState {
     fn default() -> Self {
         Self {
-            builder: MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT, 10),
+            builder: MapBuilder::new(SCREEN_WIDTH, SCREEN_HEIGHT),
             generator: Default::default(),
         }
     }
