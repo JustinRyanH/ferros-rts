@@ -3,6 +3,7 @@ mod generator;
 mod maps;
 mod player;
 mod progress;
+mod resources;
 mod spawner;
 mod systems;
 mod tools;
@@ -17,6 +18,7 @@ mod prelude {
     pub use crate::maps::*;
     pub use crate::player::*;
     pub use crate::progress::*;
+    pub use crate::resources::*;
     pub use crate::spawner::*;
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
@@ -24,8 +26,6 @@ mod prelude {
     pub use legion::world::SubWorld;
     pub use legion::*;
 }
-use std::ops::{Deref, DerefMut};
-
 use crate::prelude::*;
 
 pub fn build_scheduler() -> Schedule {
@@ -35,34 +35,6 @@ pub fn build_scheduler() -> Schedule {
         .add_system(systems::entity_render_system())
         .add_system(systems::collisions_system())
         .build()
-}
-
-struct WorldGenRng(RandomNumberGenerator);
-
-impl WorldGenRng {
-    pub fn new() -> Self {
-        Self(RandomNumberGenerator::new())
-    }
-}
-
-impl Default for WorldGenRng {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Deref for WorldGenRng {
-    type Target = RandomNumberGenerator;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl DerefMut for WorldGenRng {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
 }
 
 struct Game {
