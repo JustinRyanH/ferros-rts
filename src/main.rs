@@ -26,6 +26,8 @@ mod prelude {
     pub use legion::world::SubWorld;
     pub use legion::*;
 }
+use std::ops::{Deref, DerefMut};
+
 use crate::prelude::*;
 
 pub fn build_scheduler() -> Schedule {
@@ -37,6 +39,34 @@ pub fn build_scheduler() -> Schedule {
         .build()
 }
 
+struct WorldGenRng(RandomNumberGenerator);
+
+impl WorldGenRng {
+    pub fn new() -> Self {
+        Self(RandomNumberGenerator::new())
+    }
+}
+
+impl Default for WorldGenRng {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Deref for WorldGenRng {
+    type Target = RandomNumberGenerator;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for WorldGenRng {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
 struct Game {
     ecs: World,
     resources: Resources,
@@ -46,7 +76,8 @@ struct Game {
 impl Game {
     fn new() -> Self {
         let ecs = World::default();
-        let resources = Resources::default();
+        let mut resources = Resources::default();
+        resources.insert(WorldGenRng::new());
 
         Self {
             ecs,
@@ -68,23 +99,29 @@ impl GameState for Game {
             self.gameplay_systems
                 .execute(&mut self.ecs, &mut self.resources);
         } else {
-            let mut rng = RandomNumberGenerator::new();
-            let mut builder = MapBuilderState::default();
-            while !builder.is_finished() {
-                builder.build_world(&mut rng);
-            }
-            let MapResult { map, player } = builder.builder.build_map();
-            let player = player.expect("Failed to place player in worlds");
-            spawn_player(&mut self.ecs, player);
-            builder
-                .builder
-                .rooms
-                .iter()
-                .filter(|room| room.center() != player)
-                .map(|r| r.center())
-                .for_each(|pos| {
-                    spawn_monster(&mut self.ecs, &mut rng, pos);
-                });
+            let (map, player) = {
+                let mut rng = self
+                    .resources
+                    .get_mut::<WorldGenRng>()
+                    .expect("Expected a WorldGenRng");
+                let mut builder = MapBuilderState::default();
+                while !builder.is_finished() {
+                    builder.build_world(&mut rng);
+                }
+                let MapResult { map, player } = builder.builder.build_map();
+                let player = player.expect("Failed to place player in worlds");
+                spawn_player(&mut self.ecs, player);
+                builder
+                    .builder
+                    .rooms
+                    .iter()
+                    .filter(|room| room.center() != player)
+                    .map(|r| r.center())
+                    .for_each(|pos| {
+                        spawn_monster(&mut self.ecs, &mut rng, pos);
+                    });
+                (map, player)
+            };
             self.resources.insert(map);
             self.resources.insert(Camera::new(player));
         }
