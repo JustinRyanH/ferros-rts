@@ -4,7 +4,6 @@ mod maps;
 mod player;
 mod progress;
 mod spawner;
-mod states;
 mod systems;
 mod tools;
 
@@ -19,7 +18,6 @@ mod prelude {
     pub use crate::player::*;
     pub use crate::progress::*;
     pub use crate::spawner::*;
-    pub use crate::states::*;
     pub use crate::tools::*;
     pub use bracket_lib::prelude::*;
     pub use legion::systems::CommandBuffer;
@@ -96,15 +94,15 @@ impl Game {
                     .resources
                     .get_mut::<WorldGenRng>()
                     .expect("Expected a WorldGenRng");
-                let mut builder = MapBuilderState::default();
-                while !builder.is_finished() {
-                    builder.build_world(&mut rng);
+                let mut generator = GeneraotrRunner::default();
+                let mut builder = MapBuilder::new(SCREEN_WIDTH, SCREEN_WIDTH);
+                while !generator.is_finished() {
+                    generator.next(&mut builder, &mut rng);
                 }
-                let MapResult { map, player } = builder.builder.build_map();
+                let MapResult { map, player } = builder.build_map();
                 let player = player.expect("Failed to place player in worlds");
                 spawn_player(&mut self.ecs, player);
                 builder
-                    .builder
                     .rooms
                     .iter()
                     .filter(|room| room.center() != player)
