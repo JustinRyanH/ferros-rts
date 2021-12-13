@@ -75,7 +75,11 @@ impl Game {
     fn new() -> Self {
         let ecs = World::default();
         let mut resources = Resources::default();
+        let generator = GeneraotrRunner::default();
+        let builder = MapBuilder::new(SCREEN_WIDTH, SCREEN_WIDTH);
         resources.insert(WorldGenRng::new());
+        resources.insert(builder);
+        resources.insert(generator);
 
         Self {
             ecs,
@@ -94,8 +98,15 @@ impl Game {
                     .resources
                     .get_mut::<WorldGenRng>()
                     .expect("Expected a WorldGenRng");
-                let mut generator = GeneraotrRunner::default();
-                let mut builder = MapBuilder::new(SCREEN_WIDTH, SCREEN_WIDTH);
+                let mut generator = self
+                    .resources
+                    .get_mut::<GeneraotrRunner>()
+                    .expect("No Generator Resource");
+                let mut builder = self
+                    .resources
+                    .get_mut::<MapBuilder>()
+                    .expect("No Generator Runner");
+
                 while !generator.is_finished() {
                     generator.next(&mut builder, &mut rng);
                 }
