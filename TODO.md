@@ -1,0 +1,2 @@
+- New Progress Bar for World Gen
+- Camera moves during World Gen
