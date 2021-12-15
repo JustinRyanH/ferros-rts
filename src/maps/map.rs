@@ -46,21 +46,6 @@ impl Map {
         matches!(self.get_tile(point), Some(TileType::Floor))
     }
 
-    pub fn render(&self, camera: &Camera, draw: &mut DrawBatch) {
-        draw.target(0);
-        let fg = RGBA::from_f32(1.0, 1.0, 0.0, 0.5);
-        let color = ColorPair::new(fg, BLACK);
-        for y in 0..self.height {
-            for x in 0..self.width {
-                draw.target(0);
-                if let Some(idx) = self.idx(x, y) {
-                    let tile = self.tiles[idx];
-                    draw.set(Point::new(x, y) - camera.top_left_corner(), color, tile);
-                }
-            }
-        }
-    }
-
     pub fn get_tile(&self, Point { x, y }: Point) -> Option<TileType> {
         self.idx(x, y).map(|idx| self.tiles[idx])
     }

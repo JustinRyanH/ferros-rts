@@ -139,22 +139,6 @@ impl MapBuilder {
             player: self.player,
         }
     }
-
-    pub fn render(&self, draw: &mut DrawBatch) {
-        for tile in self.fill_tile.iter() {
-            let region = Rect::with_size(0, 0, self.width, self.height);
-            draw.fill_region(region, ColorPair::new(YELLOW, BLACK), *tile);
-        }
-        for room in self.rooms.iter() {
-            draw.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
-        }
-        for tunnel in self.tunnels.iter() {
-            tunnel.render(draw);
-        }
-        for player in self.player.iter() {
-            draw.set(*player, ColorPair::new(GREEN, BLACK), to_cp437('@'));
-        }
-    }
 }
 
 #[derive(Debug, Clone, Copy)]
