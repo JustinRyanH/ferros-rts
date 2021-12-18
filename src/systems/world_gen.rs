@@ -34,8 +34,8 @@ pub fn world_gen_progress(
     #[resource] runner: &GeneraotrRunner,
 ) {
     if let Some(progress) = bar {
-        progress.total = runner.max_progress_num();
-        progress.current = runner.progress_num();
+        progress.total = runner.total_steps();
+        progress.current = runner.current_step();
         progress.label = runner.get_render_text();
     }
 }

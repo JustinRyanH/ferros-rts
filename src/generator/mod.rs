@@ -78,16 +78,16 @@ impl GeneraotrRunner {
         self.system_progress.is_finished()
     }
 
-    pub fn progress_num(&self) -> i32 {
+    pub fn current_step(&self) -> i32 {
         if self.run_index >= self.commands.len() {
-            return self.max_progress_num();
+            return self.total_steps();
         }
         (0..=self.run_index).fold(0, |current, index| {
             current + self.get_subsystem_current_progress(index)
         })
     }
 
-    pub fn max_progress_num(&self) -> i32 {
+    pub fn total_steps(&self) -> i32 {
         self.system_progress.total as i32
     }
 
@@ -102,7 +102,7 @@ impl GeneraotrRunner {
     }
 
     pub fn update_progress(&mut self) {
-        self.system_progress.current = self.progress_num() as usize;
+        self.system_progress.current = self.current_step() as usize;
     }
 
     pub fn next(&mut self, builder: &mut MapBuilder, rng: &mut RandomNumberGenerator) {
@@ -112,7 +112,7 @@ impl GeneraotrRunner {
         }
         let perform = self.commands[self.run_index].perform(builder, rng);
         self.sub_system_progress = perform.into();
-        self.system_progress.current = self.progress_num() as usize;
+        self.system_progress.current = self.current_step() as usize;
         if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
