@@ -8,6 +8,7 @@ pub struct ProgressBar {
 
 impl ProgressBar {
     pub const HEIGHT: i32 = 7;
+    pub const WIDTH: i32 = 70;
     pub fn new(y: i32) -> Self {
         Self {
             total: 1,

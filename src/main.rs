@@ -13,6 +13,7 @@ mod prelude {
     pub const SCREEN_HEIGHT: i32 = 50;
     pub const DIMENSION_WIDTH: i32 = SCREEN_WIDTH / 2;
     pub const DIMENSION_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+    pub const UI_LAYER: usize = 10_000;
     pub use crate::components::*;
     pub use crate::generator::*;
     pub use crate::maps::*;
@@ -31,16 +32,19 @@ use crate::prelude::*;
 pub fn build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::player_input_system())
-        .add_system(systems::render::map_system())
-        .add_system(systems::render::entity_system())
         .add_system(systems::collisions_system())
+        .flush()
+        .add_system(systems::render::map_system())
+        .add_system(systems::render::characters_system())
         .build()
 }
 
 pub fn build_build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::world_gen_system())
+        .flush()
         .add_system(systems::render::builder_system())
+        .add_system(systems::render::progress_bar_system())
         .build()
 }
 
