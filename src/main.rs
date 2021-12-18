@@ -31,8 +31,8 @@ use crate::prelude::*;
 pub fn build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::player_input_system())
-        .add_system(systems::render::map_render_system())
-        .add_system(systems::render::entity_render_system())
+        .add_system(systems::render::map_system())
+        .add_system(systems::render::entity_system())
         .add_system(systems::collisions_system())
         .build()
 }
@@ -40,7 +40,7 @@ pub fn build_scheduler() -> Schedule {
 pub fn build_build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::world_gen_system())
-        .add_system(systems::render::builder_render_system())
+        .add_system(systems::render::builder_system())
         .build()
 }
 

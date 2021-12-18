@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[read_component(Render)]
-pub fn entity_render(ecs: &SubWorld, #[resource] camera: &Camera) {
+pub fn entity(ecs: &SubWorld, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(1);
     let offset = camera.top_left_corner();
@@ -18,7 +18,7 @@ pub fn entity_render(ecs: &SubWorld, #[resource] camera: &Camera) {
 }
 
 #[system]
-pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
+pub fn map(#[resource] map: &Map, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
     for y in camera.top_y..=camera.bottom_y {
@@ -34,7 +34,7 @@ pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
 }
 
 #[system]
-pub fn builder_render(#[resource] builder: &mut MapBuilder) {
+pub fn builder(#[resource] builder: &mut MapBuilder) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
     for tile in builder.fill_tile.iter() {
