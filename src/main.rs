@@ -2,7 +2,6 @@ mod components;
 mod generator;
 mod maps;
 mod player;
-mod progress;
 mod resources;
 mod spawner;
 mod systems;
@@ -18,7 +17,6 @@ mod prelude {
     pub use crate::generator::*;
     pub use crate::maps::*;
     pub use crate::player::*;
-    pub use crate::progress::*;
     pub use crate::resources::*;
     pub use crate::spawner::*;
     pub use crate::tools::*;
@@ -42,6 +40,7 @@ pub fn build_scheduler() -> Schedule {
 pub fn build_build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::world_gen_system())
+        .add_system(systems::world_gen_progress_system())
         .flush()
         .add_system(systems::render::builder_system())
         .add_system(systems::render::progress_bar_system())

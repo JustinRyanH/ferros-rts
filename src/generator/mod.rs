@@ -78,7 +78,7 @@ impl GeneraotrRunner {
         self.system_progress.is_finished()
     }
 
-    fn progress_num(&self) -> i32 {
+    pub fn progress_num(&self) -> i32 {
         if self.run_index >= self.commands.len() {
             return self.max_progress_num();
         }
@@ -87,7 +87,7 @@ impl GeneraotrRunner {
         })
     }
 
-    fn max_progress_num(&self) -> i32 {
+    pub fn max_progress_num(&self) -> i32 {
         self.system_progress.total as i32
     }
 
@@ -127,41 +127,6 @@ impl GeneraotrRunner {
 
     pub fn get_render_text(&self) -> Option<&'static str> {
         self.get_current_command().map(|cmd| cmd.generator_text())
-    }
-}
-
-impl RenderProgress for GeneraotrRunner {
-    fn render_progress(&self, draw: &mut DrawBatch) {
-        let progress = self.system_progress;
-        let y = SCREEN_HEIGHT - 5;
-        let pos = Rect::with_size(4, y, 71, 2);
-
-        draw.draw_double_box(pos, ColorPair::new(YELLOW, BLACK));
-        if let Some(txt) = self.get_render_text() {
-            draw.print_color_centered(y, txt, ColorPair::new(WHITE, BLACK));
-        }
-
-        draw.bar_horizontal(
-            Point::new(pos.x1 + 1, y + 1),
-            70,
-            progress.current,
-            progress.total,
-            ColorPair::new(WHITE, BLACK),
-        );
-
-        if let Some(progress) = self.sub_system_progress {
-            let y = SCREEN_HEIGHT - 9;
-            let pos = Rect::with_size(4, y, 71, 2);
-
-            draw.draw_double_box(pos, ColorPair::new(YELLOW, BLACK));
-            draw.bar_horizontal(
-                Point::new(pos.x1 + 1, y + 1),
-                70,
-                progress.current,
-                progress.total,
-                ColorPair::new(WHITE, BLACK),
-            );
-        }
     }
 }
 

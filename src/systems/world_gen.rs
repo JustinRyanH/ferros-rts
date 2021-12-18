@@ -27,3 +27,15 @@ pub fn world_gen(
         resources.insert(Camera::new(player));
     });
 }
+
+#[system]
+pub fn world_gen_progress(
+    #[resource] bar: &mut Option<ProgressBar>,
+    #[resource] runner: &GeneraotrRunner,
+) {
+    if let Some(progress) = bar {
+        progress.total = runner.max_progress_num();
+        progress.current = runner.progress_num();
+        progress.label = runner.get_render_text();
+    }
+}

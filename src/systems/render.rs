@@ -55,7 +55,13 @@ pub fn builder(#[resource] builder: &mut MapBuilder) {
 
 #[system]
 pub fn progress_bar(#[resource] progress_bar: &Option<ProgressBar>) {
-    if let Some(ProgressBar { current, total, y }) = progress_bar {
+    if let Some(ProgressBar {
+        current,
+        total,
+        y,
+        label,
+    }) = progress_bar
+    {
         let mut draw_batch = DrawBatch::new();
         draw_batch.target(1);
 
@@ -69,6 +75,10 @@ pub fn progress_bar(#[resource] progress_bar: &Option<ProgressBar>) {
             *total,
             ColorPair::new(WHITE, BLACK),
         );
+
+        if let Some(label) = label {
+            draw_batch.print_color_centered(*y, label, ColorPair::new(WHITE, BLACK));
+        }
 
         draw_batch.submit(UI_LAYER + 10).expect("Batch Error");
     }

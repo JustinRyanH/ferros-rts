@@ -3,6 +3,7 @@ use crate::prelude::*;
 pub struct ProgressBar {
     pub total: i32,
     pub current: i32,
+    pub label: Option<&'static str>,
     pub y: i32,
 }
 
@@ -13,6 +14,7 @@ impl ProgressBar {
         Self {
             total: 1,
             current: 0,
+            label: None,
             y,
         }
     }
