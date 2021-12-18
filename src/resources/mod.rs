@@ -1,4 +1,21 @@
-use bracket_lib::prelude::RandomNumberGenerator;
+use crate::prelude::*;
+
+pub struct ProgressBar {
+    pub total: i32,
+    pub current: i32,
+    pub y: i32,
+}
+
+impl ProgressBar {
+    pub const HEIGHT: i32 = 7;
+    pub fn new(y: i32) -> Self {
+        Self {
+            total: 1,
+            current: 0,
+            y,
+        }
+    }
+}
 
 pub struct WorldGenRng(RandomNumberGenerator);
 

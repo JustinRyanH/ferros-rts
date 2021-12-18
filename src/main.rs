@@ -60,6 +60,7 @@ impl Game {
         resources.insert(WorldGenRng::new());
         resources.insert(builder);
         resources.insert(generator);
+        resources.insert(Some(ProgressBar::new(SCREEN_HEIGHT - ProgressBar::HEIGHT)));
 
         Self {
             ecs,
