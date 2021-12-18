@@ -32,3 +32,23 @@ pub fn map_render(#[resource] map: &Map, #[resource] camera: &Camera) {
     }
     draw_batch.submit(0).expect("Batch Error");
 }
+
+#[system]
+pub fn builder_render(#[resource] builder: &mut MapBuilder) {
+    let mut draw_batch = DrawBatch::new();
+    draw_batch.target(0);
+    for tile in builder.fill_tile.iter() {
+        let region = Rect::with_size(0, 0, builder.width, builder.height);
+        draw_batch.fill_region(region, ColorPair::new(YELLOW, BLACK), *tile);
+    }
+    for room in builder.rooms.iter() {
+        draw_batch.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
+    }
+    for tunnel in builder.tunnels.iter() {
+        tunnel.render(&mut draw_batch);
+    }
+    for player in builder.player.iter() {
+        draw_batch.set(*player, ColorPair::new(GREEN, BLACK), to_cp437('@'));
+    }
+    draw_batch.submit(0).expect("Batch Error");
+}
