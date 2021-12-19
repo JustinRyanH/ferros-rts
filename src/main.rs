@@ -41,6 +41,7 @@ pub fn build_build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::world_gen_system())
         .add_system(systems::world_gen_progress_system())
+        .add_system(systems::finish_world_gen_system())
         .flush()
         .add_system(systems::render::builder_system())
         .add_system(systems::render::progress_bar_system())

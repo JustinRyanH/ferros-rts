@@ -32,8 +32,8 @@ impl GeneratorCommand {
         &self,
         builder: &mut MapBuilder,
         rng: &mut RandomNumberGenerator,
-    ) -> BuildCommandResult {
-        match self {
+    ) -> (BuildCommandResult, Point) {
+        let result = match self {
             GeneratorCommand::FillMap(tile) => builder.fill(tile),
             GeneratorCommand::GenerateRooms {
                 num_of_rooms,
@@ -43,7 +43,8 @@ impl GeneratorCommand {
             GeneratorCommand::Tunnel { num_of_tunnels } => {
                 builder.build_tunnels(*num_of_tunnels, rng)
             }
-        }
+        };
+        (result, Point::zero())
     }
 
     pub fn steps(&self) -> usize {
@@ -95,7 +96,7 @@ impl GeneraotrRunner {
         if self.is_finished() {
             return;
         }
-        let perform = self.commands[self.run_index].perform(builder, rng);
+        let (perform, point) = self.commands[self.run_index].perform(builder, rng);
         if let BuildCommandResult::Finished = perform {
             self.run_index += 1;
         }
