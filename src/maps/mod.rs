@@ -9,27 +9,6 @@ pub struct MapResult {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct Progress {
-    pub total: usize,
-    pub current: usize,
-}
-
-impl Progress {
-    pub fn is_finished(&self) -> bool {
-        self.current >= self.total
-    }
-}
-
-impl From<BuildCommandResult> for Option<Progress> {
-    fn from(val: BuildCommandResult) -> Self {
-        match val {
-            BuildCommandResult::Progress { total, current } => Some(Progress { total, current }),
-            _ => None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy)]
 pub enum BuildCommandResult {
     Finished,
     Progress { total: usize, current: usize },
