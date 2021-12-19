@@ -17,7 +17,7 @@ impl Camera {
         }
     }
 
-    pub fn on_player_move(&mut self, Point { x, y }: Point) {
+    pub fn update(&mut self, Point { x, y }: Point) {
         self.left_x = x - DIMENSION_WIDTH;
         self.right_x = x + DIMENSION_WIDTH;
         self.top_y = y - DIMENSION_HEIGHT;

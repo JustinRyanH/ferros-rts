@@ -21,6 +21,8 @@ pub struct MapBuilder {
     pub tunnels: Vec<Tunnel>,
     pub player: Option<Point>,
     pub fill_tile: Option<TileType>,
+    pub finished: bool,
+    pub point: Point,
 }
 
 impl MapBuilder {
@@ -32,6 +34,8 @@ impl MapBuilder {
             tunnels: Vec::with_capacity(200),
             player: None,
             fill_tile: None,
+            finished: false,
+            point: Point::zero(),
         }
     }
 
@@ -43,7 +47,8 @@ impl MapBuilder {
     pub fn place_player(&mut self, rng: &mut RandomNumberGenerator) -> BuildCommandResult {
         let room = rng.range(0, self.rooms.len());
         let room = self.rooms[room].center();
-        self.player = Some(Point::new(room.x, room.y));
+        self.point = room;
+        self.player = Some(room);
         BuildCommandResult::Finished
     }
 
@@ -68,6 +73,7 @@ impl MapBuilder {
 
         if !self.rooms.iter().any(|r| r.intersect(&room)) {
             self.rooms.push(room);
+            self.point = room.center();
         }
         BuildCommandResult::Progress {
             total: num_of_rooms,
@@ -89,6 +95,8 @@ impl MapBuilder {
         let prev = self.rooms[connecting_room_index - 1].center();
         let new = self.rooms[connecting_room_index].center();
 
+        self.point = (prev + new) / 2;
+
         if rng.range(0, 2) == 1 {
             self.tunnels.push(Tunnel::horizontal(prev.x, new.x, prev.y));
             self.tunnels.push(Tunnel::vertical(prev.y, new.y, new.x));
@@ -96,6 +104,7 @@ impl MapBuilder {
             self.tunnels.push(Tunnel::vertical(prev.y, new.y, prev.x));
             self.tunnels.push(Tunnel::horizontal(prev.x, new.x, new.y));
         }
+
         BuildCommandResult::Progress {
             total: max_tunnels,
             current: self.tunnels.len(),

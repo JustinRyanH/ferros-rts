@@ -65,6 +65,7 @@ impl Game {
         resources.insert(builder);
         resources.insert(generator);
         resources.insert(Some(ProgressBar::new(SCREEN_HEIGHT - ProgressBar::HEIGHT)));
+        resources.insert(Camera::new(Point::zero()));
 
         Self {
             ecs,
@@ -105,7 +106,7 @@ fn main() -> BError {
         .with_dimensions(DIMENSION_WIDTH, DIMENSION_HEIGHT)
         .with_fancy_console(SCREEN_WIDTH, SCREEN_HEIGHT, "terminal8x8.png")
         .with_tile_dimensions(28, 28)
-        .with_fps_cap(30.0)
+        .with_fps_cap(5.0)
         .build()?;
 
     context.with_post_scanlines(true);

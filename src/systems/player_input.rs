@@ -24,7 +24,7 @@ pub fn player_input(
                 let destination = *pos + delta;
                 if map.can_enter_tile(destination) {
                     *pos = destination;
-                    camera.on_player_move(destination);
+                    camera.update(destination);
                 }
             });
         }

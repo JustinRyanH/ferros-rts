@@ -34,21 +34,40 @@ pub fn map(#[resource] map: &Map, #[resource] camera: &Camera) {
 }
 
 #[system]
-pub fn builder(#[resource] builder: &mut MapBuilder) {
+pub fn builder(#[resource] builder: &mut MapBuilder, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
+    let camera_offset = camera.top_left_corner();
     for tile in builder.fill_tile.iter() {
         let region = Rect::with_size(0, 0, builder.width, builder.height);
         draw_batch.fill_region(region, ColorPair::new(YELLOW, BLACK), *tile);
     }
     for room in builder.rooms.iter() {
-        draw_batch.fill_region(*room, ColorPair::new(RED, BLACK), TileType::Floor);
+        let with_size = Rect::with_size(
+            room.x1 - camera_offset.x,
+            room.y1 - camera_offset.y,
+            room.width(),
+            room.height(),
+        );
+        println!("Rect: {:?}", with_size);
+        println!("Room: {:?}", room);
+        draw_batch.fill_region(with_size, ColorPair::new(RED, BLACK), TileType::Floor);
     }
     for tunnel in builder.tunnels.iter() {
-        tunnel.render(&mut draw_batch);
+        tunnel.into_iter().for_each(|point| {
+            draw_batch.set(
+                point - camera_offset,
+                ColorPair::new(CYAN, BLACK),
+                TileType::Floor,
+            );
+        });
     }
     for player in builder.player.iter() {
-        draw_batch.set(*player, ColorPair::new(GREEN, BLACK), to_cp437('@'));
+        draw_batch.set(
+            *player - camera_offset,
+            ColorPair::new(GREEN, BLACK),
+            to_cp437('@'),
+        );
     }
     draw_batch.submit(0).expect("Batch Error");
 }

@@ -5,21 +5,19 @@ pub fn world_gen(
     #[resource] rng: &mut WorldGenRng,
     #[resource] generator: &mut GeneraotrRunner,
     #[resource] builder: &mut MapBuilder,
+    #[resource] camera: &mut Camera,
 ) {
-    if generator.is_finished() {
-        return;
-    }
     generator.next(builder, rng);
+    camera.update(builder.point);
 }
 
 #[system]
 pub fn finish_world_gen(
     #[resource] rng: &mut WorldGenRng,
-    #[resource] generator: &mut GeneraotrRunner,
     #[resource] builder: &mut MapBuilder,
     commands: &mut CommandBuffer,
 ) {
-    if !generator.is_finished() {
+    if !builder.finished {
         return;
     }
     let MapResult { map, player } = builder.build_map();
