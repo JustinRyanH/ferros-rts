@@ -73,7 +73,7 @@ impl InWorldCamera {
     }
 
     pub fn top_left_corner(&self) -> Point {
-        Point::new(self.left_x, self.top_y)
+        Point::new(self.left_x.max(0), self.top_y)
     }
 }
 
@@ -83,7 +83,7 @@ impl<'a> IntoIterator for &'a InWorldCamera {
     type IntoIter = CameraIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        let point = self.top_left_corner();
+        let point = Point::new(self.left_x.max(0), self.top_y);
         CameraIterator {
             camera: self,
             point,
@@ -99,10 +99,17 @@ pub struct CameraIterator<'a> {
 impl<'a> CameraIterator<'a> {
     fn step(&mut self) {
         self.point.x += 1;
-        if self.point.x > self.camera.right_x {
-            self.point.x = self.camera.left_x;
+        if self.point.x > self.x_limit() {
+            self.point.x = self.camera.left_x.max(0);
             self.point.y += 1;
         }
+    }
+
+    fn x_limit(&mut self) -> i32 {
+        if self.camera.left_x < 0 {
+            return self.camera.right_x + self.camera.left_x.abs();
+        }
+        self.camera.right_x
     }
 
     fn is_out_of_bounds(&mut self) -> bool {
