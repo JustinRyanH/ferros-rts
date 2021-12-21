@@ -7,7 +7,7 @@ pub fn player_input(
     ecs: &mut SubWorld,
     #[resource] map: &Map,
     #[resource] key: &Option<VirtualKeyCode>,
-    #[resource] camera: &mut Camera,
+    #[resource] camera: &mut InWorldCamera,
 ) {
     if let Some(key) = key {
         let delta = match key {

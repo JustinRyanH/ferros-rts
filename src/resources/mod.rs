@@ -48,14 +48,14 @@ impl std::ops::DerefMut for WorldGenRng {
     }
 }
 
-pub struct Camera {
+pub struct InWorldCamera {
     pub left_x: i32,
     pub right_x: i32,
     pub top_y: i32,
     pub bottom_y: i32,
 }
 
-impl Camera {
+impl InWorldCamera {
     pub fn new(Point { x, y }: Point) -> Self {
         Self {
             left_x: x - DIMENSION_WIDTH,
@@ -77,7 +77,7 @@ impl Camera {
     }
 }
 
-impl<'a> IntoIterator for &'a Camera {
+impl<'a> IntoIterator for &'a InWorldCamera {
     type Item = Point;
 
     type IntoIter = CameraIterator<'a>;
@@ -92,7 +92,7 @@ impl<'a> IntoIterator for &'a Camera {
 }
 
 pub struct CameraIterator<'a> {
-    pub camera: &'a Camera,
+    pub camera: &'a InWorldCamera,
     pub point: Point,
 }
 

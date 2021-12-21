@@ -63,7 +63,7 @@ impl Game {
         resources.insert(builder);
         resources.insert(generator);
         resources.insert(Some(ProgressBar::new(SCREEN_HEIGHT - ProgressBar::HEIGHT)));
-        resources.insert(Camera::new(Point::zero()));
+        resources.insert(InWorldCamera::new(Point::zero()));
 
         Self {
             ecs,
@@ -74,7 +74,8 @@ impl Game {
     }
 
     fn tick_on_command(&mut self) {
-        if self.resources.get::<Camera>().is_some() && self.resources.get::<Map>().is_some() {
+        if self.resources.get::<InWorldCamera>().is_some() && self.resources.get::<Map>().is_some()
+        {
             self.gameplay_systems
                 .execute(&mut self.ecs, &mut self.resources);
         } else {
