@@ -72,6 +72,13 @@ impl Camera {
         self.bottom_y = y + DIMENSION_HEIGHT;
     }
 
+    pub fn set_top_left_corner(&mut self, Point { x, y }: Point) {
+        self.left_x = x;
+        self.right_x = x + SCREEN_WIDTH;
+        self.top_y = y;
+        self.bottom_y = y + SCREEN_HEIGHT;
+    }
+
     pub fn top_left_corner(&self) -> Point {
         Point::new(self.left_x, self.top_y)
     }

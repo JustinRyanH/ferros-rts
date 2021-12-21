@@ -28,6 +28,7 @@ use crate::prelude::*;
 pub fn build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::player_input_system())
+        .add_system(systems::keep_camera_on_map_system())
         .add_system(systems::collisions_system())
         .flush()
         .add_system(systems::render::map_system())
