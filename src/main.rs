@@ -58,7 +58,7 @@ impl Game {
         let ecs = World::default();
         let mut resources = Resources::default();
         let generator = GeneraotrRunner::default();
-        let builder = MapBuilder::new(SCREEN_WIDTH, SCREEN_WIDTH);
+        let builder = MapBuilder::new(SCREEN_WIDTH + 20, SCREEN_WIDTH + 20);
         resources.insert(WorldGenRng::new());
         resources.insert(builder);
         resources.insert(generator);

@@ -120,7 +120,7 @@ impl GeneraotrRunner {
 
 impl Default for GeneraotrRunner {
     fn default() -> Self {
-        let num_of_rooms = 10;
+        let num_of_rooms = 15;
         let commands = vec![
             GeneratorCommand::FillMap(TileType::Wall),
             GeneratorCommand::GenerateRooms {
