@@ -1,7 +1,6 @@
 mod components;
 mod generator;
 mod maps;
-mod player;
 mod resources;
 mod spawner;
 mod systems;
@@ -16,7 +15,6 @@ mod prelude {
     pub use crate::components::*;
     pub use crate::generator::*;
     pub use crate::maps::*;
-    pub use crate::player::*;
     pub use crate::resources::*;
     pub use crate::spawner::*;
     pub use crate::tools::*;
