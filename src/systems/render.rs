@@ -3,7 +3,7 @@ use crate::prelude::*;
 #[system]
 #[read_component(Point)]
 #[read_component(Render)]
-pub fn characters(ecs: &SubWorld, #[resource] camera: &InWorldCamera) {
+pub fn characters(ecs: &SubWorld, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(1);
     let offset = camera.top_left_corner();
@@ -18,7 +18,7 @@ pub fn characters(ecs: &SubWorld, #[resource] camera: &InWorldCamera) {
 }
 
 #[system]
-pub fn map(#[resource] map: &Map, #[resource] camera: &InWorldCamera) {
+pub fn map(#[resource] map: &Map, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
     let offset = camera.top_left_corner();
@@ -31,7 +31,7 @@ pub fn map(#[resource] map: &Map, #[resource] camera: &InWorldCamera) {
 }
 
 #[system]
-pub fn builder(#[resource] builder: &mut MapBuilder, #[resource] camera: &InWorldCamera) {
+pub fn builder(#[resource] builder: &mut MapBuilder, #[resource] camera: &Camera) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(0);
     let camera_offset = camera.top_left_corner();

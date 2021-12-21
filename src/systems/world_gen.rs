@@ -5,7 +5,7 @@ pub fn world_gen(
     #[resource] rng: &mut WorldGenRng,
     #[resource] generator: &mut GeneraotrRunner,
     #[resource] builder: &mut MapBuilder,
-    #[resource] camera: &mut InWorldCamera,
+    #[resource] camera: &mut Camera,
 ) {
     generator.next(builder, rng);
     camera.update(builder.point);
@@ -33,7 +33,7 @@ pub fn finish_world_gen(
         });
     commands.exec_mut(move |_, resources| {
         resources.insert(map.clone());
-        resources.insert(InWorldCamera::new(player));
+        resources.insert(Camera::new(player));
     });
 }
 

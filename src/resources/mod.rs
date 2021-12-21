@@ -48,14 +48,14 @@ impl std::ops::DerefMut for WorldGenRng {
     }
 }
 
-pub struct InWorldCamera {
+pub struct Camera {
     pub left_x: i32,
     pub right_x: i32,
     pub top_y: i32,
     pub bottom_y: i32,
 }
 
-impl InWorldCamera {
+impl Camera {
     pub fn new(Point { x, y }: Point) -> Self {
         Self {
             left_x: x - DIMENSION_WIDTH,
@@ -73,17 +73,17 @@ impl InWorldCamera {
     }
 
     pub fn top_left_corner(&self) -> Point {
-        Point::new(self.left_x.max(0), self.top_y)
+        Point::new(self.left_x, self.top_y)
     }
 }
 
-impl<'a> IntoIterator for &'a InWorldCamera {
+impl<'a> IntoIterator for &'a Camera {
     type Item = Point;
 
     type IntoIter = CameraIterator<'a>;
 
     fn into_iter(self) -> Self::IntoIter {
-        let point = Point::new(self.left_x.max(0), self.top_y);
+        let point = Point::new(self.left_x, self.top_y);
         CameraIterator {
             camera: self,
             point,
@@ -92,24 +92,17 @@ impl<'a> IntoIterator for &'a InWorldCamera {
 }
 
 pub struct CameraIterator<'a> {
-    pub camera: &'a InWorldCamera,
+    pub camera: &'a Camera,
     pub point: Point,
 }
 
 impl<'a> CameraIterator<'a> {
     fn step(&mut self) {
         self.point.x += 1;
-        if self.point.x > self.x_limit() {
-            self.point.x = self.camera.left_x.max(0);
+        if self.point.x > self.camera.right_x {
+            self.point.x = self.camera.left_x;
             self.point.y += 1;
         }
-    }
-
-    fn x_limit(&mut self) -> i32 {
-        if self.camera.left_x < 0 {
-            return self.camera.right_x + self.camera.left_x.abs();
-        }
-        self.camera.right_x
     }
 
     fn is_out_of_bounds(&mut self) -> bool {
