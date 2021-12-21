@@ -13,16 +13,6 @@ impl Tunnel {
     pub fn vertical(y1: i32, y2: i32, x: i32) -> Tunnel {
         Tunnel::Vertical { y1, y2, x }
     }
-
-    pub fn render(&self, draw: &mut DrawBatch) {
-        self.into_iter().for_each(|Point { x, y }| {
-            draw.set(
-                Point::new(x, y),
-                ColorPair::new(CYAN, BLACK),
-                TileType::Floor,
-            );
-        });
-    }
 }
 
 impl IntoIterator for Tunnel {
