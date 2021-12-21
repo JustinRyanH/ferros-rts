@@ -43,14 +43,9 @@ pub fn builder(#[resource] builder: &mut MapBuilder, #[resource] camera: &Camera
         draw_batch.fill_region(region, ColorPair::new(YELLOW, BLACK), *tile);
     }
     for room in builder.rooms.iter() {
-        let with_size = Rect::with_size(
-            room.x1 - camera_offset.x,
-            room.y1 - camera_offset.y,
-            room.width(),
-            room.height(),
-        );
-        println!("Rect: {:?}", with_size);
-        println!("Room: {:?}", room);
+        let x = room.x1 - camera_offset.x;
+        let y = room.y1 - camera_offset.y;
+        let with_size = Rect::with_size(x, y, room.width(), room.height());
         draw_batch.fill_region(with_size, ColorPair::new(RED, BLACK), TileType::Floor);
     }
     for tunnel in builder.tunnels.iter() {
