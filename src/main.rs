@@ -5,6 +5,7 @@ mod resources;
 mod spawner;
 mod systems;
 mod tools;
+mod turn_state;
 
 mod prelude {
     pub const SCREEN_WIDTH: i32 = 80;
@@ -18,6 +19,7 @@ mod prelude {
     pub use crate::resources::*;
     pub use crate::spawner::*;
     pub use crate::tools::*;
+    pub use crate::turn_state::*;
     pub use bracket_lib::prelude::*;
     pub use legion::systems::CommandBuffer;
     pub use legion::world::SubWorld;
@@ -25,10 +27,29 @@ mod prelude {
 }
 use crate::prelude::*;
 
-pub fn build_scheduler() -> Schedule {
+fn build_input_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::player_input_system())
-        .add_system(systems::keep_camera_on_map_system())
+        .flush()
+        .add_system(systems::render::map_system())
+        .add_system(systems::render::characters_system())
+        .build()
+}
+
+fn build_player_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(systems::collisions_system())
+        .flush()
+        .add_system(systems::render::map_system())
+        .add_system(systems::render::characters_system())
+        .add_system(systems::end_turn_system())
+        .build()
+}
+
+fn build_monster_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(systems::random_move_system())
+        .flush()
         .add_system(systems::collisions_system())
         .flush()
         .add_system(systems::random_move_system())
@@ -37,7 +58,7 @@ pub fn build_scheduler() -> Schedule {
         .build()
 }
 
-pub fn build_build_scheduler() -> Schedule {
+fn build_build_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::world_gen_system())
         .add_system(systems::world_gen_progress_system())
@@ -51,7 +72,9 @@ pub fn build_build_scheduler() -> Schedule {
 struct Game {
     ecs: World,
     resources: Resources,
-    gameplay_systems: Schedule,
+    input_systems: Schedule,
+    player_systems: Schedule,
+    monster_systems: Schedule,
     build_systems: Schedule,
 }
 
@@ -61,28 +84,53 @@ impl Game {
         let mut resources = Resources::default();
         let generator = GeneraotrRunner::default();
         let builder = MapBuilder::new(SCREEN_WIDTH + 20, SCREEN_WIDTH + 20);
+
         resources.insert(WorldGenRng::new());
         resources.insert(builder);
         resources.insert(generator);
         resources.insert(Some(ProgressBar::new(SCREEN_HEIGHT - ProgressBar::HEIGHT)));
         resources.insert(Camera::new(Point::zero()));
+        resources.insert(TurnState::AwaitingInput);
 
         Self {
             ecs,
             resources,
-            gameplay_systems: build_scheduler(),
             build_systems: build_build_scheduler(),
+            input_systems: build_input_scheduler(),
+            player_systems: build_player_scheduler(),
+            monster_systems: build_monster_scheduler(),
         }
     }
 
     fn tick_on_command(&mut self) {
-        if self.resources.get::<Camera>().is_some() && self.resources.get::<Map>().is_some() {
-            self.gameplay_systems
-                .execute(&mut self.ecs, &mut self.resources);
+        if self.has_map() {
+            self.run_game();
         } else {
             self.build_systems
-                .execute(&mut self.ecs, &mut self.resources);
+                .execute(&mut self.ecs, &mut self.resources)
         }
+    }
+
+    fn run_game(&mut self) {
+        let curret_turn_state = *self
+            .resources
+            .get::<TurnState>()
+            .expect("Resources requires TurnState");
+        match curret_turn_state {
+            TurnState::AwaitingInput => self
+                .input_systems
+                .execute(&mut self.ecs, &mut self.resources),
+            TurnState::PlayerTurn => self
+                .player_systems
+                .execute(&mut self.ecs, &mut self.resources),
+            TurnState::MonsterTurn => self
+                .player_systems
+                .execute(&mut self.ecs, &mut self.resources),
+        }
+    }
+
+    fn has_map(&self) -> bool {
+        self.resources.get::<Map>().is_some()
     }
 }
 
