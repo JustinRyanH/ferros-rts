@@ -52,7 +52,6 @@ fn build_monster_scheduler() -> Schedule {
         .flush()
         .add_system(systems::collisions_system())
         .flush()
-        .add_system(systems::random_move_system())
         .add_system(systems::render::map_system())
         .add_system(systems::render::characters_system())
         .build()
@@ -124,7 +123,7 @@ impl Game {
                 .player_systems
                 .execute(&mut self.ecs, &mut self.resources),
             TurnState::MonsterTurn => self
-                .player_systems
+                .monster_systems
                 .execute(&mut self.ecs, &mut self.resources),
         }
     }

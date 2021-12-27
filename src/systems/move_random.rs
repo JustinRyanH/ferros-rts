@@ -3,7 +3,11 @@ use crate::prelude::*;
 #[system]
 #[write_component(Point)]
 #[read_component(MovingRandomly)]
-pub fn random_move(ecs: &mut SubWorld, #[resource] map: &Map) {
+pub fn random_move(
+    ecs: &mut SubWorld,
+    #[resource] map: &Map,
+    #[resource] turn_state: &mut TurnState,
+) {
     let mut movers = <(&mut Point, &MovingRandomly)>::query();
     movers.iter_mut(ecs).for_each(|(pos, _)| {
         // TODO: This should be a resource, so we can make RNG more predictable
@@ -18,4 +22,5 @@ pub fn random_move(ecs: &mut SubWorld, #[resource] map: &Map) {
             *pos = destination;
         }
     });
+    *turn_state = TurnState::AwaitingInput;
 }
