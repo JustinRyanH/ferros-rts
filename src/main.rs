@@ -56,6 +56,7 @@ fn build_monster_scheduler() -> Schedule {
         .flush()
         .add_system(systems::render::map_system())
         .add_system(systems::render::characters_system())
+        .add_system(systems::end_turn_system())
         .build()
 }
 
