@@ -1,5 +1,4 @@
 mod camera;
-mod collisions;
 mod end_turn;
 mod move_random;
 mod movement;
@@ -9,7 +8,6 @@ mod world_gen;
 pub mod render;
 
 pub use camera::keep_camera_on_map_system;
-pub use collisions::collisions_system;
 pub use end_turn::end_turn_system;
 pub use move_random::random_move_system;
 pub use movement::movement_system;

@@ -42,7 +42,6 @@ fn build_player_scheduler() -> Schedule {
     Schedule::builder()
         .add_system(systems::movement_system())
         .flush()
-        .add_system(systems::collisions_system())
         .flush()
         .add_system(systems::render::map_system())
         .add_system(systems::render::characters_system())
