@@ -147,6 +147,10 @@ impl GameState for Game {
         ctx.cls();
 
         self.resources.insert(ctx.key);
+        ctx.set_active_console(0);
+        self.resources
+            .insert(MousePoint::from_tuple(ctx.mouse_pos()));
+
         self.tick_on_command();
 
         render_draw_buffer(ctx).expect("Render Error");
