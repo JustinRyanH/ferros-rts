@@ -52,7 +52,7 @@ fn build_player_scheduler() -> Schedule {
 
 fn build_monster_scheduler() -> Schedule {
     Schedule::builder()
-        .add_system(systems::random_move_system())
+        .add_system(systems::characters::random_move_system())
         .flush()
         .add_system(systems::characters::movement_system())
         .flush()
