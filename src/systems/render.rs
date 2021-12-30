@@ -124,12 +124,31 @@ pub fn hud(ecs: &SubWorld) {
 #[read_component(Name)]
 #[read_component(Health)]
 pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &MousePoint, #[resource] camera: &Camera) {
-    // let mut draw_batch = DrawBatch::new();
-    // let mut positions = <(Entity, &Point, &Name)>::query();
-    // let offset = camera.top_left_corner();
-    // let map_pos = mouse_pos.0 + offset;
+    let offset = camera.top_left_corner();
+    let map_pos = mouse_pos.0 + offset;
 
-    // let mut draw_batch = DrawBatch::new();
-    // draw_batch.target(1);
-    // draw_batch.submit(UI_LAYER).expect("Batch Error");
+    let mut draw_batch = DrawBatch::new();
+    draw_batch.target(1);
+
+    for (entity, _, name) in <(Entity, &Point, &Name)>::query()
+        .iter(ecs)
+        .filter(|(_, pos, _)| **pos == map_pos)
+    {
+        let mut screen_pos = mouse_pos.0;
+        if screen_pos.y > SCREEN_HEIGHT / 2 {
+            screen_pos.y -= 1;
+        } else {
+            screen_pos.y += 1;
+        }
+
+        let display = if let Ok(health) = ecs.entry_ref(*entity).unwrap().get_component::<Health>()
+        {
+            format!("{} : {} hp", &name.0, health.current)
+        } else {
+            name.0.clone()
+        };
+        draw_batch.print_centered_at(screen_pos, &display);
+    }
+
+    draw_batch.submit(UI_LAYER).expect("Batch Error");
 }
