@@ -94,3 +94,27 @@ pub fn progress_bar(#[resource] progress_bar: &Option<ProgressBar>) {
         draw_batch.submit(UI_LAYER + 10).expect("Batch Error");
     }
 }
+
+#[system]
+#[read_component(Health)]
+#[read_component(Player)]
+pub fn hud(ecs: &SubWorld) {
+    let mut health_query = <&Health>::query().filter(component::<Player>());
+    let Health { current, max } = health_query.iter(ecs).next().unwrap();
+
+    let mut draw_batch = DrawBatch::new();
+    draw_batch.target(1);
+    draw_batch.print_color_centered(
+        1,
+        "Explore the Dungeon. Cursor keys to move.",
+        ColorPair::new(WHITE, BLACK),
+    );
+    draw_batch.bar_horizontal(
+        Point::zero(),
+        SCREEN_WIDTH,
+        *current,
+        *max,
+        ColorPair::new(RED, BLACK),
+    );
+    draw_batch.submit(UI_LAYER + 10).expect("Batch Error");
+}
