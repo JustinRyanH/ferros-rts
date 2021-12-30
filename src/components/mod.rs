@@ -26,3 +26,18 @@ pub struct Health {
     pub current: i32,
     pub max: i32,
 }
+
+impl Health {
+    pub fn new(max: i32) -> Self {
+        Self { current: max, max }
+    }
+}
+
+#[derive(Clone, PartialEq)]
+pub struct Name(pub String);
+
+impl From<&'static str> for Name {
+    fn from(v: &'static str) -> Self {
+        Self(v.to_string())
+    }
+}

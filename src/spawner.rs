@@ -1,5 +1,13 @@
 use crate::prelude::*;
 
+fn goblin() -> (Health, Name, FontCharType) {
+    (Health::new(1), "Goblin".into(), to_cp437('g'))
+}
+
+fn orc() -> (Health, Name, FontCharType) {
+    (Health::new(2), "Orc".into(), to_cp437('o'))
+}
+
 pub fn spawn_player(commands: &mut CommandBuffer, pos: Point) {
     let render = Render {
         color: ColorPair::new(WHITE, BLACK),
@@ -21,18 +29,18 @@ pub fn spawn_monster(
     rng: &mut RandomNumberGenerator,
     pos: Point,
 ) -> Entity {
+    let (hp, name, glyph) = match rng.roll_dice(1, 10) {
+        1..=9 => goblin(),
+        _ => orc(),
+    };
+
+    let color = ColorPair::new(RED, BLACK);
     commands.push((
         Enemy,
         pos,
-        Render {
-            color: ColorPair::new(RED, BLACK),
-            glyph: match rng.range(0, 4) {
-                0 => to_cp437('E'),
-                1 => to_cp437('O'),
-                2 => to_cp437('o'),
-                _ => to_cp437('g'),
-            },
-        },
+        Render { color, glyph },
         MovingRandomly {},
+        hp,
+        name,
     ))
 }
