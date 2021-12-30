@@ -118,3 +118,18 @@ pub fn hud(ecs: &SubWorld) {
     );
     draw_batch.submit(UI_LAYER + 10).expect("Batch Error");
 }
+
+#[system]
+#[read_component(Point)]
+#[read_component(Name)]
+#[read_component(Health)]
+pub fn tooltips(ecs: &SubWorld, #[resource] mouse_pos: &MousePoint, #[resource] camera: &Camera) {
+    // let mut draw_batch = DrawBatch::new();
+    // let mut positions = <(Entity, &Point, &Name)>::query();
+    // let offset = camera.top_left_corner();
+    // let map_pos = mouse_pos.0 + offset;
+
+    // let mut draw_batch = DrawBatch::new();
+    // draw_batch.target(1);
+    // draw_batch.submit(UI_LAYER).expect("Batch Error");
+}

@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use crate::prelude::*;
 
 pub struct ProgressBar {
@@ -127,5 +129,26 @@ impl<'a> Iterator for CameraIterator<'a> {
             return None;
         }
         out
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct MousePoint(pub Point);
+
+impl MousePoint {
+    #[inline]
+    pub fn from_tuple<T>(t: (T, T)) -> Self
+    where
+        T: TryInto<i32>,
+    {
+        MousePoint(Point::new(t.0, t.1))
+    }
+}
+
+impl Deref for MousePoint {
+    type Target = Point;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }

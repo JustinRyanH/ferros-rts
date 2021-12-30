@@ -34,6 +34,7 @@ fn build_input_scheduler() -> Schedule {
         .add_system(systems::render::map_system())
         .add_system(systems::render::characters_system())
         .add_system(systems::render::hud_system())
+        .add_system(systems::render::tooltips_system())
         .build()
 }
 
