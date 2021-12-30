@@ -5,7 +5,15 @@ pub fn spawn_player(commands: &mut CommandBuffer, pos: Point) {
         color: ColorPair::new(WHITE, BLACK),
         glyph: to_cp437('@'),
     };
-    commands.push((Player, pos, render));
+    commands.push((
+        Player,
+        pos,
+        render,
+        Health {
+            current: 20,
+            max: 20,
+        },
+    ));
 }
 
 pub fn spawn_monster(
